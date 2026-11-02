@@ -9,8 +9,8 @@ private:
 
     int m_level = 1;
 
-    bool IsVisited;
-    bool IsWall;
+    bool IsVisited = false;
+    bool IsWall = false;
 
 public:
 

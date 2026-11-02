@@ -1,0 +1,30 @@
+#pragma once
+
+class BaseEntity
+{
+private:
+
+	cpu_entity* m_pEntity = nullptr;
+
+public:
+
+	//Constructor
+	BaseEntity(cpu_mesh mesh, cpu_material material, cpu_entity* entity, cpu_particle_emitter* particle_emitter);
+
+	BaseEntity();
+
+	~BaseEntity();
+
+	//Get
+	cpu_entity* GetEntity();
+	cpu_transform& GetTransform();
+
+	//Set
+	void SetEntity(cpu_entity* entity);
+
+	virtual void DestroyEntity();
+
+	virtual void Init() {};
+	virtual void Update(float dt) {};
+	virtual void Reset() {};
+};
