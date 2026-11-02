@@ -1,0 +1,70 @@
+{
+    "projects": {
+        "57F808AD-5200-52E2-2C1C-7578203C399E": {
+            "config-debug": {
+                "additionalDependencies": [
+                    "cpu-core-debug.lib",
+                    "cpu-engine-debug.lib",
+                    "cpu-render-debug.lib"
+                ],
+                "additionalIncludeDirectories": [
+                    "../../lib/cpulib/include"
+                ],
+                "additionalLibraryDirectories": [
+                    "../../lib/cpulib/lib"
+                ],
+                "preprocessorDefinitions": []
+            },
+            "config-release": {
+                "additionalDependencies": [
+                    "cpu-core.lib",
+                    "cpu-engine.lib",
+                    "cpu-render.lib"
+                ],
+                "additionalIncludeDirectories": [
+                    "../../lib/cpulib/include"
+                ],
+                "additionalLibraryDirectories": [
+                    "../../lib/cpulib/lib"
+                ],
+                "preprocessorDefinitions": []
+            },
+            "dependencies": [ "5C700DE3-6317-73C1-6A24-42452AB676D3"],
+            "dependents": [],
+            "name": "Game",
+            "property-lib": false,
+            "property-pch": true,
+            "property-vcpkg": false,
+            "property-window": true
+        },
+        "5C700DE3-6317-73C1-6A24-42452AB676D3": {
+            "config-debug": {
+                "additionalDependencies": [],
+                "additionalIncludeDirectories": [],
+                "additionalLibraryDirectories": [],
+                "preprocessorDefinitions": []
+            },
+            "config-release": {
+                "additionalDependencies": [],
+                "additionalIncludeDirectories": [],
+                "additionalLibraryDirectories": [],
+                "preprocessorDefinitions": []
+            },
+            "dependencies": [],
+            "dependents": ["57F808AD-5200-52E2-2C1C-7578203C399E"],
+            "name": "Pathfinding",
+            "property-lib": true,
+            "property-pch": false,
+            "property-vcpkg": false,
+            "property-window": false
+        }
+    },
+    "projects_name_to_guid": {
+        "Game": "57F808AD-5200-52E2-2C1C-7578203C399E",
+        "Pathfinding": "5C700DE3-6317-73C1-6A24-42452AB676D3"
+    },
+    "solution_guid": "5B8E3CDB-1423-1DF1-0E0A-1FE563CF0BD1",
+    "solution_name": "Pathfinding",
+    "startup_project": "",
+    "version": "2.0"
+}
