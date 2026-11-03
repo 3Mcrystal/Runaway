@@ -9,6 +9,8 @@ public:
 	Floor(Grid& grid);
 	~Floor();
 
+	void Init() override;
+
 private:
 
 };

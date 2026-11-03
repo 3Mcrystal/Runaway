@@ -11,4 +11,13 @@ Bonus::Bonus()
 
 Bonus::~Bonus()
 {
+	delete GetEntity()->pMesh;
+	delete GetEntity()->pMaterial;
+}
+
+void Bonus::Init()
+{
+	GetEntity()->pMaterial = new cpu_material;
+	GetEntity()->pMaterial->color = { 255, 255, 0 };
+	GetTransform().SetPosition(0, 0, 0);
 }

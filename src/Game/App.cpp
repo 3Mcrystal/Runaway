@@ -27,6 +27,9 @@ void App::OnStart()
 
 	LoadResources();
 
+	cpuEngine.GetCamera()->transform.pos = XMFLOAT3(0.f, 100.f, 0.f);
+
+	cpuEngine.GetCamera()->transform.LookAt(0,0,0, CPU_VEC3_RIGHT);
 	
 }
 
@@ -44,7 +47,6 @@ void App::OnUpdate()
 	HandleInput();
 
 	// // // // // //
-
 }
 
 void App::OnExit()
@@ -79,13 +81,10 @@ void App::OnRender(int pass)
 	}
 	case CPU_PASS_UI_END:
 	{
-
-		//std::string TextMenu = "GG You Win";
-		//TextMenu += "\nPress Escape to Main Menu";
 		//XMFLOAT3 tint = { 0.f, 0.f, 0.5f };
 		//cpuDevice.DrawText(&m_font, TextMenu.c_str(), (int)(cpuDevice.GetWidth() * 0.5f), (int)(cpuDevice.GetHeight() * 0.5f), CPU_TEXT_CENTER, &tint);
 
-		// // // // // // // //
+		DrawInfoText();
 		break;
 	}
 	}
@@ -135,10 +134,10 @@ void App::HandleInput()
 
 void App::LoadResources()
 {
-	m_pPlayer = new Player;
-	m_pBonus = new Bonus;
+	//m_pPlayer = new Player;
+	//m_pBonus = new Bonus;
 	m_pBoard = new Board;
-	m_pEnemy = new Enemy;
+	//m_pEnemy = new Enemy;
 
 	m_pBoard->GenerateMaze();
 
@@ -147,14 +146,14 @@ void App::LoadResources()
 
 	mOrigin = { (0 - gridW) * 0.5f, (0 - gridH) * 0.5f ,(0)};
 
-	m_entityToUpdate.push_back(m_pPlayer);
-	m_entityToUpdate.push_back(m_pBonus);
-	m_entityToUpdate.push_back(m_pEnemy);
+	//m_entityToUpdate.push_back(m_pPlayer);
+	//m_entityToUpdate.push_back(m_pBonus);
+	//m_entityToUpdate.push_back(m_pEnemy);
+	
+	m_pBoard->Init();
 
 	for (BaseEntity* e : m_entityToUpdate)
 		e->Init();
-
-	XMFLOAT3 basepos = { 0,0,0 };
 
 }
 

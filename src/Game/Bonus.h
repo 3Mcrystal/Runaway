@@ -7,6 +7,7 @@ public:
 	Bonus();
 	~Bonus();
 
-private:
+	void Init() override;
 
+private:
 };

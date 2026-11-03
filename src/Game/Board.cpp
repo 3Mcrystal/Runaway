@@ -1,18 +1,37 @@
 #include "pch.h"
 #include "Board.h"
-
+#include "Resource.h"
 #include <algorithm>
 
 Board::Board()
 {
-    m_floor = new Floor(m_grid);
-    m_wall = new Wall;
+    gridW = m_grid.GetRowSize() * CELL_SIZE;
+    gridH = m_grid.GetColSize() * CELL_SIZE;
+    mOrigin = { (0 - gridW) * 0.5f, (0 - gridH) * 0.5f ,(0) };
 }
 
 Board::~Board()
 {
     delete m_floor;
     delete m_wall;
+}
+
+void Board::Init()
+{
+    m_floor = new Floor(m_grid);
+	m_floor->Init();
+
+    for (int i = 0; i < m_grid.GetColSize(); i++)
+    {
+        for (int j = 0; j < m_grid.GetRowSize(); j++)
+        {
+            if (m_grid[i][j]->GetIsWall())
+            {
+                Wall* wall = new Wall;
+                wall->Init(j * CELL_SIZE + mOrigin.x + 0.5f, 1.f, i * CELL_SIZE + mOrigin.y + 0.5f);
+            }
+        }
+    }
 }
 
 Grid& Board::GetGrid()

@@ -11,4 +11,10 @@ Enemy::Enemy()
 
 Enemy::~Enemy()
 {
+	delete GetEntity()->pMesh;
+	delete GetEntity()->pMaterial;
+}
+
+void Enemy::Init()
+{
 }

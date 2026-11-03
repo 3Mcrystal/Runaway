@@ -7,6 +7,8 @@ public:
 	Wall();
 	~Wall();
 
+	void Init(float x, float y, float z);
+
 private:
 
 	int m_height;

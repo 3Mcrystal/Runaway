@@ -7,6 +7,8 @@ public:
 	Player();
 	~Player();
 
+	void Init() override;
+
 private:
 
 };
