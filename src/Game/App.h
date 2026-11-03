@@ -1,5 +1,9 @@
 #pragma once
 #include <vector>
+#include "Player.h"
+#include "Enemy.h"
+#include "Board.h"
+#include "Bonus.h"
 
 class App
 {
@@ -47,6 +51,15 @@ private:
 
 	//Shader
 	cpu_material m_base_material;
+
+	std::vector<BaseEntity*> m_entityToUpdate;
+
+	Player* m_pPlayer = nullptr;
+	Board* m_pBoard = nullptr;
+	Bonus* m_pBonus = nullptr;
+	Enemy* m_pEnemy = nullptr;
+
+	XMFLOAT3 mOrigin = { 0.f, 0.f ,0.f};
 
 	int m_score = 0;
 };

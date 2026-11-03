@@ -16,8 +16,8 @@ public:
 	void SetLineSize(int value) { lines = value; }
 
 	//Get
-    int GetRowSize() const { return row; }
-    int GetColSize() const { return lines; }
+    int GetRowSize() { return row; }
+    int GetColSize() { return lines; }
 
 	//surcharge
 	std::vector<Node*>& operator[](size_t row);

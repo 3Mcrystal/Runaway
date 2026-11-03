@@ -3,34 +3,6 @@
 #include <iostream>
 #include <vector>
 
-struct Entity
-{
-	int xe = 0;
-	int ye = 0;
-
-	//Get
-	int GetxP() { return xe; }
-	int GetyP() { return ye; }
-
-	//Set
-	void SetxP(int value) { xe = value; }
-	void SetyP(int value) { ye = value; }
-};
-
-struct Cursor
-{
-	int xc = 0;
-	int yc = 0;
-
-	//Get
-	int GetxC() { return xc; }
-	int GetyC() { return yc; }
-
-	//Set
-	void SetxC(int value) { xc = value; }
-	void SetyC(int value) { yc = value; }
-};
-
 class Pathfinding
 {
 public:
@@ -50,8 +22,6 @@ private:
 	std::vector<Node*> path;
 
 	Grid grid;
-	Entity p1;
-	Cursor c1;
 
 	int deplacement = 0;
 
