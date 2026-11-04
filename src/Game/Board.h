@@ -11,8 +11,8 @@ private:
 	Grid m_grid;
 	std::mt19937 m_RNG;
 
-	Floor* m_floor;
-	Wall* m_wall;
+	Floor* m_floor = nullptr;
+	Wall* m_wall = nullptr;
 
 	std::vector<BaseEntity*> m_BoardElementToUpdate;
 

@@ -8,7 +8,9 @@ public:
 	~Player();
 
 	void Init() override;
+	void Update(float dt) override;
 
 private:
 
+	std::pair<int, int> m_gridpos;
 };

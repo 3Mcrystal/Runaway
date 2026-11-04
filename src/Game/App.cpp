@@ -27,9 +27,9 @@ void App::OnStart()
 
 	LoadResources();
 
-	cpuEngine.GetCamera()->transform.pos = XMFLOAT3(-30.f, 50.f, 0.f);
+	cpuEngine.GetCamera()->transform.pos = XMFLOAT3(-20.f, 50.f, 0.f);
 
-	cpuEngine.GetCamera()->transform.LookAt(0,0,0, CPU_VEC3_RIGHT);
+	cpuEngine.GetCamera()->transform.LookAt(0.f,0.f,0.f, CPU_VEC3_UP);
 	
 }
 
@@ -133,16 +133,16 @@ void App::HandleInput()
 
 	//temporary
 	if (cpuInput.vi.IsKeyPressed(90))
-		m_pPlayer->GetTransform().SetPosition(m_pPlayer->GetTransform().pos.x + CELL_SIZE, m_pPlayer->GetTransform().pos.y, m_pPlayer->GetTransform().pos.z);
+		m_pPlayer->GetEntity()->transform.dir = { 1,0,0 };
 
 	if (cpuInput.vi.IsKeyPressed(83))
-		m_pPlayer->GetTransform().SetPosition(m_pPlayer->GetTransform().pos.x - CELL_SIZE, m_pPlayer->GetTransform().pos.y, m_pPlayer->GetTransform().pos.z);
+		m_pPlayer->GetEntity()->transform.dir = { -1,0,0 };
 
 	if (cpuInput.vi.IsKeyPressed(68))
-		m_pPlayer->GetTransform().SetPosition(m_pPlayer->GetTransform().pos.x, m_pPlayer->GetTransform().pos.y, m_pPlayer->GetTransform().pos.z - CELL_SIZE);
+		m_pPlayer->GetEntity()->transform.dir = { 0,0,-1 };
 
 	if (cpuInput.vi.IsKeyPressed(81))
-		m_pPlayer->GetTransform().SetPosition(m_pPlayer->GetTransform().pos.x , m_pPlayer->GetTransform().pos.y, m_pPlayer->GetTransform().pos.z + CELL_SIZE);
+		m_pPlayer->GetEntity()->transform.dir = { 0,0,1 };
 
 }
 
