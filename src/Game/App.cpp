@@ -27,7 +27,7 @@ void App::OnStart()
 
 	LoadResources();
 
-	cpuEngine.GetCamera()->transform.pos = XMFLOAT3(0.f, 100.f, 0.f);
+	cpuEngine.GetCamera()->transform.pos = XMFLOAT3(-30.f, 50.f, 0.f);
 
 	cpuEngine.GetCamera()->transform.LookAt(0,0,0, CPU_VEC3_RIGHT);
 	
@@ -130,23 +130,37 @@ void App::HandleInput()
 {
 	if (cpuInput.IsBackPressed())
 		cpuEngine.Quit();
+
+	//temporary
+	if (cpuInput.vi.IsKeyPressed(90))
+		m_pPlayer->GetTransform().SetPosition(m_pPlayer->GetTransform().pos.x + CELL_SIZE, m_pPlayer->GetTransform().pos.y, m_pPlayer->GetTransform().pos.z);
+
+	if (cpuInput.vi.IsKeyPressed(83))
+		m_pPlayer->GetTransform().SetPosition(m_pPlayer->GetTransform().pos.x - CELL_SIZE, m_pPlayer->GetTransform().pos.y, m_pPlayer->GetTransform().pos.z);
+
+	if (cpuInput.vi.IsKeyPressed(68))
+		m_pPlayer->GetTransform().SetPosition(m_pPlayer->GetTransform().pos.x, m_pPlayer->GetTransform().pos.y, m_pPlayer->GetTransform().pos.z - CELL_SIZE);
+
+	if (cpuInput.vi.IsKeyPressed(81))
+		m_pPlayer->GetTransform().SetPosition(m_pPlayer->GetTransform().pos.x , m_pPlayer->GetTransform().pos.y, m_pPlayer->GetTransform().pos.z + CELL_SIZE);
+
 }
 
 void App::LoadResources()
 {
-	//m_pPlayer = new Player;
+	m_pPlayer = new Player;
 	//m_pBonus = new Bonus;
 	m_pBoard = new Board;
 	//m_pEnemy = new Enemy;
 
-	m_pBoard->GenerateMaze();
+	m_pBoard->GenerateMaze(*m_pPlayer);
 
 	const float gridW = m_pBoard->GetGrid().GetRowSize() * CELL_SIZE;
 	const float gridH = m_pBoard->GetGrid().GetColSize() * CELL_SIZE;
 
 	mOrigin = { (0 - gridW) * 0.5f, (0 - gridH) * 0.5f ,(0)};
 
-	//m_entityToUpdate.push_back(m_pPlayer);
+	m_entityToUpdate.push_back(m_pPlayer);
 	//m_entityToUpdate.push_back(m_pBonus);
 	//m_entityToUpdate.push_back(m_pEnemy);
 	

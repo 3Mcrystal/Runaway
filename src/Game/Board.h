@@ -34,7 +34,7 @@ public:
 	Grid& GetGrid();
 
 	void CarveMaze(int x, int y);
-	void addEntranceAndExit();
-	void GenerateMaze();
+	void addEntranceAndExit(Player& entity);
+	void GenerateMaze(Player& entity);
 
 };

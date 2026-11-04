@@ -2,6 +2,7 @@
 #include "Board.h"
 #include "Resource.h"
 #include <algorithm>
+#include "Player.h"
 
 Board::Board()
 {
@@ -39,16 +40,12 @@ Grid& Board::GetGrid()
     return m_grid;
 }
 
-void Board::addEntranceAndExit() {
-
-    // Set the entrance at the top (fixed)
-    for (int x = 1; x < m_grid.GetRowSize(); x += 2) { // start at cell next to left/top border, move by unit of 2 to stay in structure
-        if (m_grid[1][x]->GetIsWall() == false) { // Find a valid entry point
-            m_grid[0][x]->SetIsWall(false);// Open entrance
-            //mpPlayerNode = m_grid[0][x]; // Set player start position
-            //mpCursorNode = m_grid[0][x]; // Set cursor start position
-            break;
-        }
+void Board::addEntranceAndExit(Player& entity) 
+{
+    if (m_grid[m_grid.GetColSize()/2][m_grid.GetRowSize()/2]->GetIsWall() == true) 
+    {
+        m_grid[m_grid.GetColSize() / 2][m_grid.GetRowSize() / 2]->SetIsWall(false);// Open entrance
+        entity.GetTransform().SetPosition(m_grid.GetColSize() / 2 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, m_grid.GetColSize() / 2 * CELL_SIZE + mOrigin.y + 0.5f);
     }
 
     // Find all possible exit locations on the bottom row and add that index to vector
@@ -110,7 +107,7 @@ void Board::CarveMaze(int x, int y) {
     }
 }
 
-void Board::GenerateMaze()
+void Board::GenerateMaze(Player& entity)
 {
 
     if (m_grid.GetColSize() <= 0 || m_grid.GetRowSize() <= 0)
@@ -131,5 +128,5 @@ void Board::GenerateMaze()
 
     CarveMaze(1, 1); // Recursively carve path ways, randomly starting from (0,0) position (inside border)
 
-    addEntranceAndExit(); // adds an entrance and exit to the existing new maze
+    addEntranceAndExit(entity); // adds an entrance and exit to the existing new maze
 }
