@@ -4,6 +4,17 @@
 #include <algorithm>
 #include "Player.h"
 
+Board& Board::GetInstance()
+{
+    static Board* board = new Board;
+    return *board;
+}
+
+void Board::DestroyInstance()
+{
+    delete &GetInstance();
+}
+
 Board::Board()
 {
     gridW = m_grid.GetRowSize() * CELL_SIZE;
@@ -40,13 +51,20 @@ Grid& Board::GetGrid()
     return m_grid;
 }
 
+XMFLOAT3 Board::GetOrigin()
+{
+    return mOrigin;
+}
+
 void Board::addEntranceAndExit(Player& entity) 
 {
-    if (m_grid[m_grid.GetColSize()/2][m_grid.GetRowSize()/2]->GetIsWall() == true) 
+    if (m_grid[17][17]->GetIsWall() == true) 
     {
-        m_grid[m_grid.GetColSize() / 2][m_grid.GetRowSize() / 2]->SetIsWall(false);// Open entrance
-        entity.GetTransform().SetPosition(m_grid.GetColSize() / 2 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, m_grid.GetColSize() / 2 * CELL_SIZE + mOrigin.y + 0.5f);
+        m_grid[17][17]->SetIsWall(false);// Open entrance
+        entity.GetTransform().SetPosition(17 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, 17 * CELL_SIZE + mOrigin.y + 0.5f);
     }
+    else
+        entity.GetTransform().SetPosition(17 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, 17 * CELL_SIZE + mOrigin.y + 0.5f);
 
     // Find all possible exit locations on the bottom row and add that index to vector
     std::vector<int> validExits;

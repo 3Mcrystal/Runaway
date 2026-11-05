@@ -133,16 +133,28 @@ void App::HandleInput()
 
 	//temporary
 	if (cpuInput.vi.IsKeyPressed(90))
-		m_pPlayer->GetEntity()->transform.dir = { 1,0,0 };
+	{
+		m_pPlayer->SetNewDir({ 1,0,0 });
+		m_pPlayer->SetChangeDirection(true);
+	}
 
 	if (cpuInput.vi.IsKeyPressed(83))
-		m_pPlayer->GetEntity()->transform.dir = { -1,0,0 };
+	{
+		m_pPlayer->SetNewDir({ -1,0,0 });
+		m_pPlayer->SetChangeDirection(true);
+	}
 
 	if (cpuInput.vi.IsKeyPressed(68))
-		m_pPlayer->GetEntity()->transform.dir = { 0,0,-1 };
+	{
+		m_pPlayer->SetNewDir({ 0,0,-1 });
+		m_pPlayer->SetChangeDirection(true);
+	}
 
 	if (cpuInput.vi.IsKeyPressed(81))
-		m_pPlayer->GetEntity()->transform.dir = { 0,0,1 };
+	{
+		m_pPlayer->SetNewDir({ 0,0,1 });
+		m_pPlayer->SetChangeDirection(true);
+	}
 
 }
 

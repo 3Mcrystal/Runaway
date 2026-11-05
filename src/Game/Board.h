@@ -16,22 +16,30 @@ private:
 
 	std::vector<BaseEntity*> m_BoardElementToUpdate;
 
-	XMFLOAT3 mOrigin = { 0.f, 0.f ,0.f };
+	XMFLOAT3 mOrigin;
 
 	float gridW = 0.f;
 	float gridH = 0.f;
 
 public:
 
+	static Board &GetInstance();
+	void DestroyInstance();
+
 	Board();
 	~Board();
 
+	//Get
 	Floor& GetFloor() { return *m_floor; }
 	Wall& GetWall() { return *m_wall; }
+	Grid& GetGrid();
+	XMFLOAT3 GetOrigin();
+
+	//Set
+
 
 	void Init();
 
-	Grid& GetGrid();
 
 	void CarveMaze(int x, int y);
 	void addEntranceAndExit(Player& entity);
