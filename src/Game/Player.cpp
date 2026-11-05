@@ -10,6 +10,7 @@ Player::Player()
 	tMesh->CreateSphere(0.5f,5,20);
 	GetEntity()->pMesh = tMesh;
 	GetEntity()->transform.dir = { 0,0,0 };
+	m_TargetPos = { 0,0,0 };
 }
 
 Player::~Player()
@@ -67,7 +68,7 @@ void Player::SetCurrentDir(XMFLOAT3 value)
 	m_CurrentDir = value;
 }
 
-XMFLOAT3 Player::GridToWorld(int row, int col)
+XMFLOAT3 Player::GridToWorld(int row,int col)
 {
 	Board& board = Board::GetInstance();
 
@@ -78,62 +79,79 @@ std::pair<int, int> Player::WorldToGrid(XMFLOAT3 p)
 {
 	Board& board = Board::GetInstance();
 
-	int row = (int)((p.z - board.GetOrigin().z - 0.5f) / CELL_SIZE);
-	int col = (int)((p.x - board.GetOrigin().x - 0.5f) / CELL_SIZE);
+	int row = roundf((p.z - board.GetOrigin().z - 0.5f) / CELL_SIZE);
+	int col = roundf((p.x - board.GetOrigin().x - 0.5f) / CELL_SIZE);
 
 	return std::pair<int, int>(row, col);
+}
+
+bool Player::MoveTowards(XMFLOAT3 target, float dt)
+{
+	Board& board = Board::GetInstance();
+	
+	return false;
 }
 
 void Player::Init()
 {
 	GetEntity()->pMaterial = new cpu_material;
 	GetEntity()->pMaterial->color = cpu::ToColor(255, 0, 0);
+
+	Board& board = Board::GetInstance();
+
+	m_TargetPos = GetTransform().pos;
+
+	auto [row, col] = WorldToGrid(GetTransform().pos);
+
+	const XMFLOAT3 dirs[] = { { 1,0,0 },{ -1,0,0 },{ 0,0,1 },{ 0,0,-1 } };
+	for (const XMFLOAT3& d : dirs)
+	{
+		if (board.IsWalkable(row + (int)d.z, col + (int)d.x))
+		{
+			m_CurrentDir = d;
+			m_NewDir = d;
+			GetTransform().dir = d;
+			m_IsMoving = true;
+			break;
+		}
+	}
 }
 
 void Player::Update(float dt)
 {
 	Board& board = Board::GetInstance();
 
-	XMFLOAT3 Pos = { GetTransform().pos.x - board.GetOrigin().x - 0.5f , 1.f ,GetTransform().pos.z - board.GetOrigin().z - 0.5f};
-	XMFLOAT3 DestPos = GetTransform().pos;
+	float step = m_velocity * dt;
+	XMFLOAT3 d = { m_TargetPos.x - GetTransform().pos.x, m_TargetPos.y - GetTransform().pos.y, m_TargetPos.z - GetTransform().pos.z };
 
-	if (WorldToGrid(GetTransform().pos) == GridToWorld(WorldToGrid(GetTransform().pos).first, WorldToGrid(GetTransform().pos).second))
+	float dist = sqrtf(d.x * d.x + d.y * d.y + d.z * d.z);
+
+	if (dist <= step)
 	{
-		if (m_ChangeDirection)
+		GetTransform().pos = m_TargetPos;
+
+		auto [row, col] = WorldToGrid(GetTransform().pos);
+
+		if (m_ChangeDirection && board.IsWalkable(row + (int)m_NewDir.z, col + (int)m_NewDir.x))
 		{
-			if (board.IsWalkable((int)(Pos.z + m_NewDir.z), (int)(Pos.x + m_NewDir.x)))
-			{
-				SetCurrentDir(m_NewDir);
-				m_ChangeDirection = false;
-				m_IsMoving = true;
-			}
+			SetCurrentDir(m_NewDir);
+			GetTransform().dir = m_CurrentDir;
+			m_ChangeDirection = false;
 		}
+
+		int nextRow = row + (int)m_CurrentDir.z;
+		int nextCol = col + (int)m_CurrentDir.x;
+
+		bool canMove = (m_CurrentDir.x != 0 || m_CurrentDir.z != 0) && board.IsWalkable(nextRow, nextCol);
+
+		m_IsMoving = canMove;
+
+		if (canMove)
+			m_TargetPos = GridToWorld(nextRow, nextCol);
 		else
-		{
-			if (board.IsWalkable((int)(Pos.z + m_CurrentDir.z), (int)(Pos.x + m_CurrentDir.x)) == false)
-			{
-				m_IsMoving = false;
-			}
-		}
+			m_TargetPos = GridToWorld(row, col);
 	}
 
 	if (m_IsMoving)
-		GetTransform().Move(m_velocity * dt);
-
-	//if (IsAtApproximatePos(Pos, DestPos, 0.1f))
-	//{
-	//	if (IsInBounds(Pos))
-	//		m_IsMoving = false;
-
-	//	if (m_ChangeDirection)
-	//	{
-	//		if (IsInBounds(Pos + m_NewDir))
-	//			return;
-
-	//		SetNewDir(m_NewDir);
-	//		m_ChangeDirection = false;
-	//		m_IsMoving = true;
-	//	}
-	//}
-
+		GetTransform().Move(step);
 }

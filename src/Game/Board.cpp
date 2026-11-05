@@ -70,12 +70,11 @@ bool Board::IsInBounds(XMFLOAT3 pos)
 
 bool Board::IsWalkable(int row, int col)
 {
+	// les murs sont walkable
 	if (row < 0 || row >= m_grid.GetColSize())
 		return false;
     else if(col < 0 || col >= m_grid.GetRowSize())
         return false;
-	else if (m_grid[row][col]->GetIsWall())
-		return false;
     return true;
 }
 
@@ -84,10 +83,10 @@ void Board::addEntranceAndExit(Player& entity)
     if (m_grid[m_grid.GetColSize() / 2][m_grid.GetRowSize() / 2]->GetIsWall() == true) 
     {
         m_grid[m_grid.GetColSize() / 2][m_grid.GetRowSize() / 2]->SetIsWall(false);// Open entrance
-        entity.GetTransform().SetPosition(m_grid.GetRowSize() / 2 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, m_grid.GetColSize() / 2 * CELL_SIZE + mOrigin.z + 0.5f);
+        entity.GetTransform().SetPosition(m_grid.GetColSize() / 2 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, m_grid.GetRowSize() / 2 * CELL_SIZE + mOrigin.z + 0.5f);
     }
     else
-        entity.GetTransform().SetPosition(m_grid.GetRowSize() / 2 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, m_grid.GetColSize() / 2   * CELL_SIZE + mOrigin.z + 0.5f);
+        entity.GetTransform().SetPosition(m_grid.GetColSize() / 2 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, m_grid.GetRowSize() / 2 * CELL_SIZE + mOrigin.z + 0.5f);
 
     // Find all possible exit locations on the bottom row and add that index to vector
     std::vector<int> validExits;

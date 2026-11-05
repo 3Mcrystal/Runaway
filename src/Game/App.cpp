@@ -40,11 +40,11 @@ void App::OnUpdate()
 	float dt = cpuTime.delta;
 	float time = cpuTime.total;
 
-	UpdateEntity(dt);
-
 	// Handle Input //
 
 	HandleInput();
+
+	UpdateEntity(dt);
 
 	// // // // // //
 }
@@ -117,7 +117,7 @@ void App::UpdateEntity(float dt)
 	{
 		BaseEntity* e = *it;
 		if (e->GetEntity()->dead)
-			m_entityToUpdate.erase(it);
+			it = m_entityToUpdate.erase(it);
 		else
 		{
 			e->Update(dt);
@@ -131,7 +131,6 @@ void App::HandleInput()
 	if (cpuInput.IsBackPressed())
 		cpuEngine.Quit();
 
-	//temporary
 	if (cpuInput.vi.IsKeyPressed(90))
 	{
 		m_pPlayer->SetNewDir({ 1,0,0 });
@@ -155,7 +154,6 @@ void App::HandleInput()
 		m_pPlayer->SetNewDir({ 0,0,1 });
 		m_pPlayer->SetChangeDirection(true);
 	}
-
 }
 
 void App::LoadResources()
@@ -180,7 +178,6 @@ void App::LoadResources()
 
 	for (BaseEntity* e : m_entityToUpdate)
 		e->Init();
-
 }
 
 void App::ReleaseRessources()

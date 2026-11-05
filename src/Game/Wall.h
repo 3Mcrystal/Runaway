@@ -11,6 +11,6 @@ public:
 
 private:
 
-	int m_height;
+	int m_height = 1;
 
 };
