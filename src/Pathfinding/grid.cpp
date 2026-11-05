@@ -6,10 +6,10 @@
 Grid::Grid()
 {
 	grid.resize(lines);
-    for (int i = 0; i < grid.size(); i++)
+    for (int i = 0; i < GetColSize(); i++)
     {
         grid[i].resize(row);
-        for (int j = 0; j < grid.size(); j++)
+        for (int j = 0; j < GetRowSize(); j++)
         {
             grid[i][j] = new Node();
             grid[i][j]->SetX(i);

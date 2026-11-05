@@ -29,6 +29,8 @@ public:
 	Board();
 	~Board();
 
+	void Init();
+
 	//Get
 	Floor& GetFloor() { return *m_floor; }
 	Wall& GetWall() { return *m_wall; }
@@ -37,9 +39,11 @@ public:
 
 	//Set
 
+	// // //
 
-	void Init();
+	bool IsInBounds(XMFLOAT3 pos);
 
+	bool IsWalkable(int row, int col);
 
 	void CarveMaze(int x, int y);
 	void addEntranceAndExit(Player& entity);

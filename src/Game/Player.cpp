@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Player.h"
 #include "Board.h"
+#include <Resource.h>
 
 Player::Player()
 {
@@ -66,6 +67,23 @@ void Player::SetCurrentDir(XMFLOAT3 value)
 	m_CurrentDir = value;
 }
 
+XMFLOAT3 Player::GridToWorld(int row, int col)
+{
+	Board& board = Board::GetInstance();
+
+	return { col * CELL_SIZE + board.GetOrigin().x + 0.5f, 1.f, row * CELL_SIZE + board.GetOrigin().z + 0.5f };
+}
+
+std::pair<int, int> Player::WorldToGrid(XMFLOAT3 p)
+{
+	Board& board = Board::GetInstance();
+
+	int row = (int)((p.z - board.GetOrigin().z - 0.5f) / CELL_SIZE);
+	int col = (int)((p.x - board.GetOrigin().x - 0.5f) / CELL_SIZE);
+
+	return std::pair<int, int>(row, col);
+}
+
 void Player::Init()
 {
 	GetEntity()->pMaterial = new cpu_material;
@@ -76,22 +94,46 @@ void Player::Update(float dt)
 {
 	Board& board = Board::GetInstance();
 
-	int vitesse = 1;
-	XMFLOAT3 Pos = { GetTransform().pos.x - board.GetOrigin().x - 0.5f , 1.f ,GetTransform().pos.z - board.GetOrigin().y - 0.5f};
-	XMFLOAT3 DestPos = {Pos.x + board.GetOrigin().x + 0.5f , 1.f , Pos.z + board.GetOrigin().x + 0.5f};
+	XMFLOAT3 Pos = { GetTransform().pos.x - board.GetOrigin().x - 0.5f , 1.f ,GetTransform().pos.z - board.GetOrigin().z - 0.5f};
+	XMFLOAT3 DestPos = GetTransform().pos;
 
-	if (IsAtApproximatePos(Pos,DestPos,0.1f))
+	if (WorldToGrid(GetTransform().pos) == GridToWorld(WorldToGrid(GetTransform().pos).first, WorldToGrid(GetTransform().pos).second))
 	{
-		if ()
-		{
-
-		}
-
 		if (m_ChangeDirection)
 		{
-			
+			if (board.IsWalkable((int)(Pos.z + m_NewDir.z), (int)(Pos.x + m_NewDir.x)))
+			{
+				SetCurrentDir(m_NewDir);
+				m_ChangeDirection = false;
+				m_IsMoving = true;
+			}
 		}
-
-		GetTransform().Move(vitesse * dt);
+		else
+		{
+			if (board.IsWalkable((int)(Pos.z + m_CurrentDir.z), (int)(Pos.x + m_CurrentDir.x)) == false)
+			{
+				m_IsMoving = false;
+			}
+		}
 	}
+
+	if (m_IsMoving)
+		GetTransform().Move(m_velocity * dt);
+
+	//if (IsAtApproximatePos(Pos, DestPos, 0.1f))
+	//{
+	//	if (IsInBounds(Pos))
+	//		m_IsMoving = false;
+
+	//	if (m_ChangeDirection)
+	//	{
+	//		if (IsInBounds(Pos + m_NewDir))
+	//			return;
+
+	//		SetNewDir(m_NewDir);
+	//		m_ChangeDirection = false;
+	//		m_IsMoving = true;
+	//	}
+	//}
+
 }

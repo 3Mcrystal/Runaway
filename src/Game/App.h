@@ -54,8 +54,9 @@ private:
 
 	std::vector<BaseEntity*> m_entityToUpdate;
 
+	Board& m_pBoard = Board::GetInstance();
+
 	Player* m_pPlayer = nullptr;
-	Board* m_pBoard = nullptr;
 	Bonus* m_pBonus = nullptr;
 	Enemy* m_pEnemy = nullptr;
 

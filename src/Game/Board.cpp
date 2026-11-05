@@ -19,7 +19,7 @@ Board::Board()
 {
     gridW = m_grid.GetRowSize() * CELL_SIZE;
     gridH = m_grid.GetColSize() * CELL_SIZE;
-    mOrigin = { (0 - gridW) * 0.5f, (0 - gridH) * 0.5f ,(0) };
+    mOrigin = { (0 - gridW) * 0.5f,(0), (0 - gridH) * 0.5f };
 }
 
 Board::~Board()
@@ -40,7 +40,7 @@ void Board::Init()
             if (m_grid[i][j]->GetIsWall())
             {
                 Wall* wall = new Wall;
-                wall->Init(j * CELL_SIZE + mOrigin.x + 0.5f, 1.f, i * CELL_SIZE + mOrigin.y + 0.5f);
+                wall->Init(j * CELL_SIZE + mOrigin.x + 0.5f, 1.f, i * CELL_SIZE + mOrigin.z + 0.5f);
             }
         }
     }
@@ -56,15 +56,38 @@ XMFLOAT3 Board::GetOrigin()
     return mOrigin;
 }
 
+bool Board::IsInBounds(XMFLOAT3 pos)
+{
+
+    if (pos.x + GetOrigin().x + 0.5f < 0 ||
+        pos.x + GetOrigin().x + 0.5f > GetGrid().GetRowSize() - 1 ||
+        pos.z + GetOrigin().z + 0.5f < 0 ||
+        pos.z + GetOrigin().z + 0.5f > GetGrid().GetColSize() - 1)
+        return false;
+
+    return true;
+}
+
+bool Board::IsWalkable(int row, int col)
+{
+	if (row < 0 || row >= m_grid.GetColSize())
+		return false;
+    else if(col < 0 || col >= m_grid.GetRowSize())
+        return false;
+	else if (m_grid[row][col]->GetIsWall())
+		return false;
+    return true;
+}
+
 void Board::addEntranceAndExit(Player& entity) 
 {
-    if (m_grid[17][17]->GetIsWall() == true) 
+    if (m_grid[m_grid.GetColSize() / 2][m_grid.GetRowSize() / 2]->GetIsWall() == true) 
     {
-        m_grid[17][17]->SetIsWall(false);// Open entrance
-        entity.GetTransform().SetPosition(17 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, 17 * CELL_SIZE + mOrigin.y + 0.5f);
+        m_grid[m_grid.GetColSize() / 2][m_grid.GetRowSize() / 2]->SetIsWall(false);// Open entrance
+        entity.GetTransform().SetPosition(m_grid.GetRowSize() / 2 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, m_grid.GetColSize() / 2 * CELL_SIZE + mOrigin.z + 0.5f);
     }
     else
-        entity.GetTransform().SetPosition(17 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, 17 * CELL_SIZE + mOrigin.y + 0.5f);
+        entity.GetTransform().SetPosition(m_grid.GetRowSize() / 2 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, m_grid.GetColSize() / 2   * CELL_SIZE + mOrigin.z + 0.5f);
 
     // Find all possible exit locations on the bottom row and add that index to vector
     std::vector<int> validExits;

@@ -23,6 +23,9 @@ public:
 	void SetNewDir(XMFLOAT3 value);
 	void SetCurrentDir(XMFLOAT3 value);
 
+	XMFLOAT3 GridToWorld(int row, int col);
+	std::pair<int, int> WorldToGrid(XMFLOAT3 p);
+
 	void Init() override;
 	void Update(float dt) override;
 
@@ -32,6 +35,8 @@ private:
 
 	XMFLOAT3 m_NewDir;
 	XMFLOAT3 m_CurrentDir;
+
+	float m_velocity = 0.5f;
 
 	bool m_ChangeDirection = false;
 	bool m_IsMoving = false;

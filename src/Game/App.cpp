@@ -162,13 +162,13 @@ void App::LoadResources()
 {
 	m_pPlayer = new Player;
 	//m_pBonus = new Bonus;
-	m_pBoard = new Board;
+	Board& m_pBoard = Board::GetInstance();
 	//m_pEnemy = new Enemy;
 
-	m_pBoard->GenerateMaze(*m_pPlayer);
+	m_pBoard.GenerateMaze(*m_pPlayer);
 
-	const float gridW = m_pBoard->GetGrid().GetRowSize() * CELL_SIZE;
-	const float gridH = m_pBoard->GetGrid().GetColSize() * CELL_SIZE;
+	const float gridW = m_pBoard.GetGrid().GetRowSize() * CELL_SIZE;
+	const float gridH = m_pBoard.GetGrid().GetColSize() * CELL_SIZE;
 
 	mOrigin = { (0 - gridW) * 0.5f, (0 - gridH) * 0.5f ,(0)};
 
@@ -176,7 +176,7 @@ void App::LoadResources()
 	//m_entityToUpdate.push_back(m_pBonus);
 	//m_entityToUpdate.push_back(m_pEnemy);
 	
-	m_pBoard->Init();
+	m_pBoard.Init();
 
 	for (BaseEntity* e : m_entityToUpdate)
 		e->Init();
@@ -187,8 +187,8 @@ void App::ReleaseRessources()
 {
 	delete m_pPlayer;
 	delete m_pBonus;
-	delete m_pBoard;
 	delete m_pEnemy;
+	m_pBoard.DestroyInstance();
 }
 
 void App::MyPixelShader(cpu_ps_io& io)
