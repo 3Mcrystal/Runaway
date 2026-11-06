@@ -11,6 +11,7 @@ private:
 
     bool IsVisited = false;
     bool IsWall = false;
+    bool IsBlocked = false; //taken
 
 public:
 
@@ -23,6 +24,7 @@ public:
 
     bool GetIsVisited();
     bool GetIsWall();
+    bool GetIsBlocked();
 
     //Set
     void SetX(int x);
@@ -32,5 +34,6 @@ public:
 
     void SetIsVisited(bool visited);
     void SetIsWall(bool wall);
+    void SetIsBlocked(bool blocked);
 
 };

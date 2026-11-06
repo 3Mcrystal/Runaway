@@ -25,6 +25,11 @@ bool Node::GetIsWall()
     return IsWall;
 }
 
+bool Node::GetIsBlocked()
+{
+    return IsBlocked;
+}
+
 void Node::SetX(int x)
 {
     m_pos.first = x;
@@ -47,4 +52,9 @@ void Node::SetIsVisited(bool visited)
 void Node::SetIsWall(bool wall)
 {
     IsWall = wall;
+}
+
+void Node::SetIsBlocked(bool blocked)
+{
+    IsBlocked = blocked;
 }

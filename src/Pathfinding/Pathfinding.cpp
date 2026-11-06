@@ -66,6 +66,9 @@ void Pathfinding::BFS(Grid& g, Node* start, Node* target)
             if (g[nx][ny]->GetIsWall())
                 continue; // mur
 
+            if (g[nx][ny]->GetIsBlocked())
+                continue; //case prise par agent
+
             if (visited[nx][ny])
                 continue; // déjà vu
 
@@ -138,6 +141,9 @@ void Pathfinding::Djikstra(Grid& g, Node* start, Node* target)
                 continue;
 
             if (g[nx][ny]->GetIsWall())
+                continue;
+
+            if (g[nx][ny]->GetIsBlocked())
                 continue;
 
             // Coût pour entrer dans la case voisine (minimum 1)

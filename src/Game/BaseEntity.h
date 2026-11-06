@@ -13,7 +13,7 @@ public:
 
 	BaseEntity();
 
-	~BaseEntity();
+	virtual ~BaseEntity();
 
 	//Get
 	cpu_entity* GetEntity();
