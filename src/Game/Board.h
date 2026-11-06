@@ -14,7 +14,7 @@ private:
 	Floor* m_floor = nullptr;
 	Wall* m_wall = nullptr;
 
-	std::vector<BaseEntity*> m_BoardElementToUpdate;
+	std::vector<Wall*> m_BoardElementToUpdate;
 
 	XMFLOAT3 mOrigin;
 
@@ -46,7 +46,7 @@ public:
 	bool IsWalkable(int row, int col);
 
 	void CarveMaze(int x, int y);
-	void addEntranceAndExit(Player& entity);
+	void AddSpawn(Player& entity);
 	void GenerateMaze(Player& entity);
 
 };

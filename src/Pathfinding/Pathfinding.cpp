@@ -14,13 +14,15 @@ Pathfinding::~Pathfinding()
 {
 }
 
-static std::vector<Node*> RebuildPath(const std::vector<std::vector<Node*>>& parent,
-    Node* s, Node* t)
+static std::vector<Node*> RebuildPath(const std::vector<std::vector<Node*>>& parent,Node* s, Node* t)
 {
     std::vector<Node*> result;
+
     for (Node* cur = t; cur != s; cur = parent[cur->GetX()][cur->GetY()])
         result.push_back(cur);
+
     std::reverse(result.begin(), result.end());
+
     return result;
 }
 
@@ -30,15 +32,14 @@ void Pathfinding::BFS(Grid& g, Node* start, Node* target)
     path.clear();
     deplacement = 0;
 
-    const int lines = g.GetColSize();   // nombre de lignes
-    const int cols = g.GetRowSize();   // nombre de colonnes
+    const int lines = g.GetColSize();
+    const int cols  = g.GetRowSize();
 
-    // On travaille toujours avec les vrais nœuds de la grille
     Node* s = g[start->GetX()][start->GetY()];
     Node* t = g[target->GetX()][target->GetY()];
 
-    std::vector<std::vector<bool>>  visited(lines, std::vector<bool>(cols, false));
-    std::vector<std::vector<Node*>> parent(lines, std::vector<Node*>(cols, nullptr));
+    std::vector<std::vector<bool>>  visited (lines, std::vector<bool>(cols, false));//j'adore cette feature
+    std::vector<std::vector<Node*>> parent (lines, std::vector<Node*>(cols, nullptr));
     std::queue<Node*> toVisit;
 
     const int dx[4] = { -1, 1, 0, 0 };
@@ -107,9 +108,12 @@ void Pathfinding::Djikstra(Grid& g, Node* start, Node* target)
     std::vector<std::vector<Node*>> parent(lines, std::vector<Node*>(cols, nullptr));
 
     // File de priorité : le plus petit coût sort en premier
-    using Entry = std::pair<int, Node*>;
-    auto cmp = [](const Entry& a, const Entry& b) { return a.first > b.first; };
-    std::priority_queue<Entry, std::vector<Entry>, decltype(cmp)> toVisit(cmp);
+    auto cmp = [](const std::pair<int, Node*>& a, const std::pair<int, Node*>& b)
+        { 
+            return a.first > b.first; 
+        };
+
+    std::priority_queue<std::pair<int, Node*>, std::vector<std::pair<int, Node*>>, decltype(cmp)> toVisit(cmp);
 
     const int dx[4] = { -1, 1, 0, 0 };
     const int dy[4] = { 0, 0, -1, 1 };
@@ -141,12 +145,14 @@ void Pathfinding::Djikstra(Grid& g, Node* start, Node* target)
                 continue;
 
             // Coût pour entrer dans la case voisine (minimum 1)
-            int nd = d + std::max(1, static_cast<int>(g[nx][ny]->GetLevel()));
+            int nd = d + std::max(1, static_cast<int>(g[nx][ny]->GetLevel() + 1));
 
             if (nd < dist[nx][ny])      // meilleur chemin trouvé
             {
                 dist[nx][ny] = nd;
+
                 parent[nx][ny] = current;
+
                 toVisit.push({ nd, g[nx][ny] });
             }
         }

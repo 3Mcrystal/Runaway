@@ -18,6 +18,7 @@ public:
 	//Get
     int GetRowSize() { return row; }
     int GetColSize() { return lines; }
+	Node* GetNode(int col, int row);
 
 	//surcharge
 	std::vector<Node*>& operator[](size_t row);

@@ -20,9 +20,17 @@ Wall::~Wall()
 
 void Wall::Init(float x, float y, float z)
 {
+	Board& board = Board::GetInstance();
 	GetEntity()->pMaterial = new cpu_material;
 	GetEntity()->pMaterial->color = cpu::ToColor(0, 201, 201);
 	GetEntity()->transform.pos.x = x;
 	GetEntity()->transform.pos.y = y;
 	GetEntity()->transform.pos.z = z;
+	m_height = board.GetGrid().GetNode(WorldToGrid({ x,y,z }).first, WorldToGrid({ x,y,z }).second)->GetLevel();
+
+	mesh_addon* tMesh;
+	tMesh = new mesh_addon;
+	tMesh->CreateRectangleBlock(CELL_SIZE / 2, m_height, CELL_SIZE / 2);
+	GetEntity()->pMesh = tMesh;
+	GetEntity()->transform.pos.y = y + std::floor(m_height / 2);
 }

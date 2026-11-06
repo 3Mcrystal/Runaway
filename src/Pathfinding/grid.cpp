@@ -27,6 +27,11 @@ Grid::~Grid()
             delete n;
 }
 
+Node* Grid::GetNode(int col, int row)
+{
+    return grid[col][row];
+}
+
 std::vector<Node*>& Grid::operator[](size_t row)
 {
 	return grid[row];

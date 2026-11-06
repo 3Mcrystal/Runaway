@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Player.h"
 #include "Board.h"
+#include "Utils.h"
+
 #include <Resource.h>
 
 Player::Player()
@@ -17,15 +19,6 @@ Player::~Player()
 {
 	delete GetEntity()->pMesh;
 	delete GetEntity()->pMaterial;
-}
-
-bool Player::IsAtApproximatePos(const XMFLOAT3& pos, const XMFLOAT3& dest, float approximate)
-{
-	float dx = dest.x - pos.x;
-	float dy = dest.y - pos.y;
-	float dz = dest.z - pos.z;
-
-	return  dx <= approximate && dx >= -approximate && dy <= approximate && dy >= -approximate && dz <= approximate && dz >= - approximate;
 }
 
 bool Player::GetChangeDirection()
@@ -68,28 +61,50 @@ void Player::SetCurrentDir(XMFLOAT3 value)
 	m_CurrentDir = value;
 }
 
-XMFLOAT3 Player::GridToWorld(int row,int col)
-{
-	Board& board = Board::GetInstance();
-
-	return { col * CELL_SIZE + board.GetOrigin().x + 0.5f, 1.f, row * CELL_SIZE + board.GetOrigin().z + 0.5f };
-}
-
-std::pair<int, int> Player::WorldToGrid(XMFLOAT3 p)
-{
-	Board& board = Board::GetInstance();
-
-	int row = roundf((p.z - board.GetOrigin().z - 0.5f) / CELL_SIZE);
-	int col = roundf((p.x - board.GetOrigin().x - 0.5f) / CELL_SIZE);
-
-	return std::pair<int, int>(row, col);
-}
-
 bool Player::MoveTowards(XMFLOAT3 target, float dt)
 {
 	Board& board = Board::GetInstance();
+
+	float step = m_velocity * dt;
+
+	XMFLOAT3 d = { m_TargetPos.x - GetTransform().pos.x, m_TargetPos.y - GetTransform().pos.y, m_TargetPos.z - GetTransform().pos.z };
+	float distsquare = d.x * d.x + d.y * d.y + d.z * d.z;
+
+	XMFLOAT3 distance = Utils::Distance(GetTransform().pos, target);
+	Utils::Normalize(distance);
 	
-	return false;
+	if (abs(distance.x) > abs(distance.y) && abs(distance.x) > abs(distance.z))
+	{
+		distance.x < 0 ? -1 : 1;
+		distance.y = 0;
+		distance.z = 0;
+	}
+	if (abs(distance.y) > abs(distance.x) && abs(distance.y) > abs(distance.z))
+	{
+		distance.y < 0 ? -1 : 1;
+		distance.x = 0;
+		distance.z = 0;
+	}
+	if (abs(distance.z) > abs(distance.x) && abs(distance.z) > abs(distance.y))
+	{
+		distance.z < 0 ? -1 : 1;
+		distance.x = 0;
+		distance.y = 0;
+	}
+
+	SetNewDir(distance);
+	SetCurrentDir(m_NewDir);
+	if (distsquare <= step * step)
+	{
+		GetTransform().pos = target;
+		return true;
+	}
+	else
+	{
+		GetTransform().Move(step);
+		return false;
+	}
+
 }
 
 void Player::Init()
@@ -104,6 +119,7 @@ void Player::Init()
 	auto [row, col] = WorldToGrid(GetTransform().pos);
 
 	const XMFLOAT3 dirs[] = { { 1,0,0 },{ -1,0,0 },{ 0,0,1 },{ 0,0,-1 } };
+
 	for (const XMFLOAT3& d : dirs)
 	{
 		if (board.IsWalkable(row + (int)d.z, col + (int)d.x))
@@ -122,9 +138,11 @@ void Player::Update(float dt)
 	Board& board = Board::GetInstance();
 
 	float step = m_velocity * dt;
-	XMFLOAT3 d = { m_TargetPos.x - GetTransform().pos.x, m_TargetPos.y - GetTransform().pos.y, m_TargetPos.z - GetTransform().pos.z };
 
+	XMFLOAT3 d = { m_TargetPos.x - GetTransform().pos.x, m_TargetPos.y - GetTransform().pos.y, m_TargetPos.z - GetTransform().pos.z };
 	float dist = sqrtf(d.x * d.x + d.y * d.y + d.z * d.z);
+
+	//if (m_PositionQueue.empty() == false); à refacto
 
 	if (dist <= step)
 	{

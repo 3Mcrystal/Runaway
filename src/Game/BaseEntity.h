@@ -22,6 +22,11 @@ public:
 	//Set
 	void SetEntity(cpu_entity* entity);
 
+	// // // //
+
+	XMFLOAT3 GridToWorld(int row, int col);
+	std::pair<int, int> WorldToGrid(XMFLOAT3 p);
+
 	virtual void DestroyEntity();
 
 	virtual void Init() {};

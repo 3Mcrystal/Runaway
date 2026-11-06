@@ -7,8 +7,6 @@ class Player : public BaseEntity
 public:
 	Player();
 	~Player();
-
-	bool IsAtApproximatePos(const XMFLOAT3& pos, const XMFLOAT3& dest, float approximate);
 	
 	//Get
 	bool GetChangeDirection();
@@ -26,9 +24,6 @@ public:
 
 	// // // // //
 
-	XMFLOAT3 GridToWorld(int row, int col);
-	std::pair<int, int> WorldToGrid(XMFLOAT3 p);
-
 	bool MoveTowards(XMFLOAT3 target, float dt);
 
 	void Init() override;
@@ -39,7 +34,7 @@ private:
 	std::pair<int, int> m_PosInGrid;
 	std::pair<int, int> m_TargetPosInGrid;
 
-	std::queue<XMFLOAT3> m_climbingPositions;
+	std::queue<XMFLOAT3> m_PositionQueue;
 
 	XMFLOAT3 m_TargetPos;
 
