@@ -21,7 +21,12 @@ Wall::~Wall()
 void Wall::Init(float x, float y, float z)
 {
 	Board& board = Board::GetInstance();
-	GetEntity()->pMaterial = new cpu_material;
+
+	if (GetEntity()->pMaterial == nullptr)
+	{
+		GetEntity()->pMaterial = new cpu_material;
+	}
+
 	GetEntity()->pMaterial->color = cpu::ToColor(0, 201, 201);
 	GetEntity()->transform.pos.x = x;
 	GetEntity()->transform.pos.y = y;

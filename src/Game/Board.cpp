@@ -17,13 +17,17 @@ int GetRandomNumber(int min, int max)
 
 Board& Board::GetInstance()
 {
-    static Board* board = new Board;
-    return *board;
+    if (s_instance == nullptr)
+        s_instance = new Board;
+
+    return *s_instance;
 }
 
 void Board::DestroyInstance()
 {
-    delete &GetInstance();
+    delete s_instance;
+    s_instance = nullptr;
+
 }
 
 Board::Board()
@@ -41,11 +45,23 @@ Board::~Board()
     }
 
     delete m_floor;
-    delete m_wall;
+    ClearWalls();
+}
+
+void Board::ClearWalls()
+{
+    for (Wall* wall : m_walls)
+        delete wall;
+
+    m_walls.clear();
 }
 
 void Board::Init()
 {
+    //In case Init is called again?
+    delete m_floor;
+    ClearWalls();
+
     m_floor = new Floor(m_grid);
 	m_floor->Init();
 
@@ -57,7 +73,7 @@ void Board::Init()
             {
                 Wall* wall = new Wall;
                 wall->Init(j * CELL_SIZE + mOrigin.x + 0.5f, 1.f, i * CELL_SIZE + mOrigin.z + 0.5f);
-                m_BoardElementToUpdate.push_back(wall);
+                m_walls.push_back(wall);
             }
         }
     }

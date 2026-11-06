@@ -3,6 +3,7 @@
 #include "Floor.h"
 #include <grid.h>
 #include <random>
+#include <vector>
 
 class Board
 {
@@ -12,7 +13,9 @@ private:
 	std::mt19937 m_RNG;
 
 	Floor* m_floor = nullptr;
-	Wall* m_wall = nullptr;
+	std::vector<Wall*> m_walls;
+
+	inline static Board* s_instance = nullptr;
 
 	std::vector<Wall*> m_BoardElementToUpdate;
 
@@ -30,10 +33,10 @@ public:
 	~Board();
 
 	void Init();
+	void ClearWalls();
 
 	//Get
 	Floor& GetFloor() { return *m_floor; }
-	Wall& GetWall() { return *m_wall; }
 	Grid& GetGrid();
 	XMFLOAT3 GetOrigin();
 
