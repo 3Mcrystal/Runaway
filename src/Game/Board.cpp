@@ -39,11 +39,6 @@ Board::Board()
 
 Board::~Board()
 {
-    for (Wall* w : m_BoardElementToUpdate)
-    {
-        delete w;
-    }
-
     delete m_floor;
     ClearWalls();
 }

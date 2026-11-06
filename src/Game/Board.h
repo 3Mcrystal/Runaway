@@ -10,14 +10,15 @@ class Board
 private:
 
 	Grid m_grid;
+
 	std::mt19937 m_RNG;
 
 	Floor* m_floor = nullptr;
-	std::vector<Wall*> m_walls;
 
 	inline static Board* s_instance = nullptr;
 
-	std::vector<Wall*> m_BoardElementToUpdate;
+	std::vector<Wall*> m_walls;
+	std::vector <BaseEntity*> m_BoardElementToUpdate;
 
 	XMFLOAT3 mOrigin;
 
