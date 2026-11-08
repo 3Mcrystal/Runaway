@@ -58,7 +58,7 @@ void Board::Init()
     ClearWalls();
 
     m_floor = new Floor(m_grid);
-	m_floor->Init();
+    m_floor->Init();
 
     for (int i = 0; i < m_grid.GetColSize(); i++)
     {
@@ -84,40 +84,41 @@ XMFLOAT3 Board::GetOrigin()
     return mOrigin;
 }
 
-bool Board::IsInBounds(XMFLOAT3 pos)
+bool Board::IsInBounds(int row, int col, int margin)
 {
-
-    if (pos.x + GetOrigin().x + 0.5f < 0 ||
-        pos.x + GetOrigin().x + 0.5f > GetGrid().GetRowSize() - 1 ||
-        pos.z + GetOrigin().z + 0.5f < 0 ||
-        pos.z + GetOrigin().z + 0.5f > GetGrid().GetColSize() - 1)
-        return false;
-
-    return true;
+    return row >= margin && row < m_grid.GetColSize() - margin
+        && col >= margin && col < m_grid.GetRowSize() - margin;
 }
 
 bool Board::IsWalkable(int row, int col)
 {
-	// les murs sont walkable
-	if (row < 0 || row >= m_grid.GetColSize())
-		return false;
-    else if(col < 0 || col >= m_grid.GetRowSize())
-        return false;
-    return true;
+    return IsInBounds(row, col, 1);
 }
 
-void Board::AddSpawn(Player& entity) 
+float Board::GetStandHeight(int row, int col)
 {
-    if (m_grid[m_grid.GetColSize() / 2][m_grid.GetRowSize() / 2]->GetIsWall() == true) 
+    if (!IsInBounds(row, col, 0))
+        return FLOOR_TOP + PLAYER_RADIUS;
+
+    Node* node = m_grid[row][col];
+
+    const float top = node->GetIsWall() ? 2.f * node->GetLevel() : FLOOR_TOP;
+
+    return top + PLAYER_RADIUS;
+}
+
+void Board::AddSpawn(Player& entity)
+{
+    if (m_grid[m_grid.GetColSize() / 2][m_grid.GetRowSize() / 2]->GetIsWall() == true)
     {
-        m_grid[m_grid.GetColSize() / 2][m_grid.GetRowSize() / 2]->SetIsWall(false);// Open entrance
+		m_grid[m_grid.GetColSize() / 2][m_grid.GetRowSize() / 2]->SetIsWall(false);// Creuse un trou au centre du labyrinthe pour spawn le joueur
         entity.GetTransform().SetPosition(m_grid.GetColSize() / 2 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, m_grid.GetRowSize() / 2 * CELL_SIZE + mOrigin.z + 0.5f);
     }
     else
         entity.GetTransform().SetPosition(m_grid.GetColSize() / 2 * CELL_SIZE + mOrigin.x + 0.5f, 1.f, m_grid.GetRowSize() / 2 * CELL_SIZE + mOrigin.z + 0.5f);
 }
 
-void Board::CarveMaze(int x, int y) 
+void Board::CarveMaze(int x, int y)
 {
 
     static const int dx[] = { 0,  0, -2,  2 };
@@ -129,20 +130,14 @@ void Board::CarveMaze(int x, int y)
 
     m_grid[y][x]->SetIsWall(false);
 
-    auto isBounds = [](int ax, int bound)
-        {
-            return (ax > 0) && (ax < bound - 1);
-        };
-
     for (int dir : dirs)
     {
         int nx = x + dx[dir];
         int ny = y + dy[dir];
 
-        if (isBounds(ny, m_grid.GetColSize()) && isBounds(nx, m_grid.GetRowSize()) && m_grid[ny][nx]->GetIsWall())
+        if (IsInBounds(ny, nx, 1) && m_grid[ny][nx]->GetIsWall())
         {
             m_grid[y + dy[dir] / 2][x + dx[dir] / 2]->SetIsWall(false);
-
             CarveMaze(nx, ny);
         }
     }

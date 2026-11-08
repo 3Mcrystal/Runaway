@@ -9,7 +9,7 @@ Player::Player()
 {
 	cpu_mesh* tMesh;
 	tMesh = new cpu_mesh;
-	tMesh->CreateSphere(0.5f,5,20);
+	tMesh->CreateSphere(PLAYER_RADIUS, 5, 20);
 	GetEntity()->pMesh = tMesh;
 	GetEntity()->transform.dir = { 0,0,0 };
 	m_TargetPos = { 0,0,0 };
@@ -63,48 +63,45 @@ void Player::SetCurrentDir(XMFLOAT3 value)
 
 bool Player::MoveTowards(XMFLOAT3 target, float dt)
 {
-	Board& board = Board::GetInstance();
-
 	float step = m_velocity * dt;
 
-	XMFLOAT3 d = { m_TargetPos.x - GetTransform().pos.x, m_TargetPos.y - GetTransform().pos.y, m_TargetPos.z - GetTransform().pos.z };
+	XMFLOAT3 pos = GetTransform().pos;
+	XMFLOAT3 d = { target.x - pos.x, target.y - pos.y, target.z - pos.z };
 	float distsquare = d.x * d.x + d.y * d.y + d.z * d.z;
 
-	XMFLOAT3 distance = Utils::Distance(GetTransform().pos, target);
-	Utils::Normalize(distance);
-	
-	if (abs(distance.x) > abs(distance.y) && abs(distance.x) > abs(distance.z))
-	{
-		distance.x < 0 ? -1 : 1;
-		distance.y = 0;
-		distance.z = 0;
-	}
-	if (abs(distance.y) > abs(distance.x) && abs(distance.y) > abs(distance.z))
-	{
-		distance.y < 0 ? -1 : 1;
-		distance.x = 0;
-		distance.z = 0;
-	}
-	if (abs(distance.z) > abs(distance.x) && abs(distance.z) > abs(distance.y))
-	{
-		distance.z < 0 ? -1 : 1;
-		distance.x = 0;
-		distance.y = 0;
-	}
-
-	SetNewDir(distance);
-	SetCurrentDir(m_NewDir);
 	if (distsquare <= step * step)
 	{
-		GetTransform().pos = target;
+		GetTransform().SetPosition(target.x, target.y, target.z);
 		return true;
 	}
-	else
-	{
-		GetTransform().Move(step);
-		return false;
-	}
 
+	float dist = sqrtf(distsquare);
+	GetTransform().SetPosition(pos.x + d.x / dist * step, pos.y + d.y / dist * step, pos.z + d.z / dist * step);
+	return false;
+}
+
+void Player::QueueMove(int row, int col)
+{
+	Board& board = Board::GetInstance();
+
+	XMFLOAT3 from = GetTransform().pos;
+	XMFLOAT3 to = GridToWorld(row, col);
+	to.y = board.GetStandHeight(row, col);
+
+	const float eps = 0.01f;// permet de detecter une différence de hauteur entre deux cases en évitant les problèmes d'arrondi
+
+	if (to.y > from.y + eps)		// montee : vertical puis horizontal
+	{
+		m_PositionQueue.push({ from.x, to.y, from.z });
+		m_PositionQueue.push(to);
+	}
+	else if (to.y < from.y - eps)	// descente : horizontal puis vertical
+	{
+		m_PositionQueue.push({ to.x, from.y, to.z });
+		m_PositionQueue.push(to);
+	}
+	else							// meme hauteur
+		m_PositionQueue.push(to);
 }
 
 void Player::Init()
@@ -116,13 +113,13 @@ void Player::Init()
 
 	m_TargetPos = GetTransform().pos;
 
-	auto [row, col] = WorldToGrid(GetTransform().pos);
+	std::pair<int, int>PosGrid = WorldToGrid(GetTransform().pos);
 
 	const XMFLOAT3 dirs[] = { { 1,0,0 },{ -1,0,0 },{ 0,0,1 },{ 0,0,-1 } };
 
 	for (const XMFLOAT3& d : dirs)
 	{
-		if (board.IsWalkable(row + (int)d.z, col + (int)d.x))
+		if (board.IsWalkable(PosGrid.first + (int)d.z, PosGrid.second + (int)d.x))
 		{
 			m_CurrentDir = d;
 			m_NewDir = d;
@@ -137,39 +134,33 @@ void Player::Update(float dt)
 {
 	Board& board = Board::GetInstance();
 
-	float step = m_velocity * dt;
-
-	XMFLOAT3 d = { m_TargetPos.x - GetTransform().pos.x, m_TargetPos.y - GetTransform().pos.y, m_TargetPos.z - GetTransform().pos.z };
-	float dist = sqrtf(d.x * d.x + d.y * d.y + d.z * d.z);
-
-	//if (m_PositionQueue.empty() == false); à refacto
-
-	if (dist <= step)
+	// En deplacement : on suit la file de waypoints, aucune decision tant qu'elle n'est pas vide
+	if (!m_PositionQueue.empty())
 	{
-		GetTransform().pos = m_TargetPos;
+		if (MoveTowards(m_PositionQueue.front(), dt))
+			m_PositionQueue.pop();
 
-		auto [row, col] = WorldToGrid(GetTransform().pos);
-
-		if (m_ChangeDirection && board.IsWalkable(row + (int)m_NewDir.z, col + (int)m_NewDir.x))
-		{
-			SetCurrentDir(m_NewDir);
-			GetTransform().dir = m_CurrentDir;
-			m_ChangeDirection = false;
-		}
-
-		int nextRow = row + (int)m_CurrentDir.z;
-		int nextCol = col + (int)m_CurrentDir.x;
-
-		bool canMove = (m_CurrentDir.x != 0 || m_CurrentDir.z != 0) && board.IsWalkable(nextRow, nextCol);
-
-		m_IsMoving = canMove;
-
-		if (canMove)
-			m_TargetPos = GridToWorld(nextRow, nextCol);
-		else
-			m_TargetPos = GridToWorld(row, col);
+		if (!m_PositionQueue.empty())
+			return;
 	}
 
-	if (m_IsMoving)
-		GetTransform().Move(step);
+	std::pair<int,int> PosGrid = WorldToGrid(GetTransform().pos);
+
+	if (m_ChangeDirection && board.IsWalkable(PosGrid.first + (int)m_NewDir.z, PosGrid.second + (int)m_NewDir.x))
+	{
+		SetCurrentDir(m_NewDir);
+		GetTransform().dir = m_CurrentDir;
+		m_ChangeDirection = false;
+	}
+
+	int nextRow = PosGrid.first + (int)m_CurrentDir.z;
+	int nextCol = PosGrid.second + (int)m_CurrentDir.x;
+
+	if ((m_CurrentDir.x != 0 || m_CurrentDir.z != 0) && board.IsWalkable(nextRow, nextCol))
+	{
+		QueueMove(nextRow, nextCol);
+		m_IsMoving = true;
+	}
+	else
+		m_IsMoving = false;
 }

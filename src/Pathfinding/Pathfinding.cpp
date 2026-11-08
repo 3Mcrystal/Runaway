@@ -5,6 +5,7 @@
 #include <queue>
 #include <algorithm>
 #include <limits>
+#include <functional>
 
 Pathfinding::Pathfinding()
 {
@@ -38,8 +39,8 @@ void Pathfinding::BFS(Grid& g, Node* start, Node* target)
     Node* s = g[start->GetX()][start->GetY()];
     Node* t = g[target->GetX()][target->GetY()];
 
-    std::vector<std::vector<bool>>  visited (lines, std::vector<bool>(cols, false));//j'adore cette feature
-    std::vector<std::vector<Node*>> parent (lines, std::vector<Node*>(cols, nullptr));
+	std::vector<std::vector<bool>>  visited(lines, std::vector<bool>(cols, false));//j'adore cette feature //Crée un tableau de tableau de booléens pour savoir si on a déjà visité une case
+	std::vector<std::vector<Node*>> parent(lines, std::vector<Node*>(cols, nullptr));//Crée un tableau de tableau de pointeurs vers les parents pour reconstruire le chemin
     std::queue<Node*> toVisit;
 
     const int dx[4] = { -1, 1, 0, 0 };
@@ -102,7 +103,8 @@ void Pathfinding::Djikstra(Grid& g, Node* start, Node* target)
 
     const int lines = g.GetColSize();
     const int cols = g.GetRowSize();
-    constexpr int INF = std::numeric_limits<int>::max();
+
+	const int INF = std::numeric_limits<int>::max();// Valeur maximale d'un int pour représenter l'infini
 
     Node* s = g[start->GetX()][start->GetY()];
     Node* t = g[target->GetX()][target->GetY()];
@@ -111,12 +113,8 @@ void Pathfinding::Djikstra(Grid& g, Node* start, Node* target)
     std::vector<std::vector<Node*>> parent(lines, std::vector<Node*>(cols, nullptr));
 
     // File de priorité : le plus petit coût sort en premier
-    auto cmp = [](const std::pair<int, Node*>& a, const std::pair<int, Node*>& b)
-        { 
-            return a.first > b.first; 
-        };
-
-    std::priority_queue<std::pair<int, Node*>, std::vector<std::pair<int, Node*>>, decltype(cmp)> toVisit(cmp);
+    using QueueItem = std::pair<int, Node*>;   // (coût, case)
+    std::priority_queue<QueueItem, std::vector<QueueItem>, std::greater<QueueItem>> toVisit;
 
     const int dx[4] = { -1, 1, 0, 0 };
     const int dy[4] = { 0, 0, -1, 1 };
@@ -129,7 +127,7 @@ void Pathfinding::Djikstra(Grid& g, Node* start, Node* target)
         auto [d, current] = toVisit.top();
         toVisit.pop();
 
-        // Entrée périmée : on a déjà trouvé mieux pour ce nœud
+        //on a déjà trouvé mieux pour ce nœud
         if (d > dist[current->GetX()][current->GetY()])
             continue;
 
@@ -141,17 +139,16 @@ void Pathfinding::Djikstra(Grid& g, Node* start, Node* target)
             int nx = current->GetX() + dx[i];
             int ny = current->GetY() + dy[i];
 
-            if (nx < 0 || nx >= lines || ny < 0 || ny >= cols)
+			if (nx < 0 || nx >= lines || ny < 0 || ny >= cols)//hors limites
                 continue;
 
-            if (g[nx][ny]->GetIsWall())
+            if (g[nx][ny]->GetIsWall())//mur
                 continue;
 
-            if (g[nx][ny]->GetIsBlocked())
+            if (g[nx][ny]->GetIsBlocked())//agent
                 continue;
 
-            // Coût pour entrer dans la case voisine (minimum 1)
-            int nd = d + std::max(1, static_cast<int>(g[nx][ny]->GetLevel() + 1));
+            int nd = d + g[nx][ny]->GetLevel() + 1;
 
             if (nd < dist[nx][ny])      // meilleur chemin trouvé
             {

@@ -15,6 +15,8 @@
 #define IDC_MYICON				2
 
 #define CELL_SIZE				1.0f
+#define FLOOR_TOP				0.5f
+#define PLAYER_RADIUS			0.5f
 
 #ifndef IDC_STATIC
 #define IDC_STATIC				-1

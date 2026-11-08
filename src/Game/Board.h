@@ -27,7 +27,7 @@ private:
 
 public:
 
-	static Board &GetInstance();
+	static Board& GetInstance();
 	void DestroyInstance();
 
 	Board();
@@ -41,13 +41,13 @@ public:
 	Grid& GetGrid();
 	XMFLOAT3 GetOrigin();
 
-	//Set
-
 	// // //
 
-	bool IsInBounds(XMFLOAT3 pos);
+	bool IsInBounds(int row, int col, int margin);
 
 	bool IsWalkable(int row, int col);
+
+	float GetStandHeight(int row, int col);
 
 	void CarveMaze(int x, int y);
 	void AddSpawn(Player& entity);

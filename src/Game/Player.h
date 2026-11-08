@@ -7,7 +7,7 @@ class Player : public BaseEntity
 public:
 	Player();
 	~Player();
-	
+
 	//Get
 	bool GetChangeDirection();
 	bool GetIsMoving();
@@ -25,6 +25,7 @@ public:
 	// // // // //
 
 	bool MoveTowards(XMFLOAT3 target, float dt);
+	void QueueMove(int row, int col);
 
 	void Init() override;
 	void Update(float dt) override;
