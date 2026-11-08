@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "Bonus.h"
+#include "Resource.h"
+#include "Utils.h"
+#include "Board.h"
 
 Bonus::Bonus()
 {
@@ -17,7 +20,11 @@ Bonus::~Bonus()
 
 void Bonus::Init()
 {
+	Board& board = Board::GetInstance();
 	GetEntity()->pMaterial = new cpu_material;
-	GetEntity()->pMaterial->color = { 255, 255, 0 };
-	GetTransform().SetPosition(0, 0, 0);
+	GetEntity()->pMaterial->color = { 255, 0, 255 };
+	int row = Utils::GetRandomNumber(0, board.GetGrid().GetColSize() - 1);
+	int col = Utils::GetRandomNumber(0, board.GetGrid().GetRowSize() - 1);
+	GetTransform().pos = GridToWorld(row, col);
+	GetTransform().pos.y = board.GetStandHeight(row, col);
 }

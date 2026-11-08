@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Board.h"
 #include "Utils.h"
+#include "Bonus.h"
 
 #include <Resource.h>
 
@@ -75,7 +76,7 @@ bool Player::MoveTowards(XMFLOAT3 target, float dt)
 		return true;
 	}
 
-	float dist = sqrtf(distsquare);
+	float dist = sqrt(distsquare);
 	GetTransform().SetPosition(pos.x + d.x / dist * step, pos.y + d.y / dist * step, pos.z + d.z / dist * step);
 	return false;
 }
@@ -135,12 +136,12 @@ void Player::Update(float dt)
 	Board& board = Board::GetInstance();
 
 	// En deplacement : on suit la file de waypoints, aucune decision tant qu'elle n'est pas vide
-	if (!m_PositionQueue.empty())
+	if (m_PositionQueue.empty() == false)
 	{
 		if (MoveTowards(m_PositionQueue.front(), dt))
 			m_PositionQueue.pop();
 
-		if (!m_PositionQueue.empty())
+		if (m_PositionQueue.empty() == false)
 			return;
 	}
 

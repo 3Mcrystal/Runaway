@@ -3,17 +3,7 @@
 #include "Resource.h"
 #include <algorithm>
 #include "Player.h"
-
-int GetRandomNumber(int min, int max)
-{
-    static std::random_device rd;
-
-    static std::mt19937 gen(rd());
-
-    std::uniform_int_distribution<> dis(min, max);
-
-    return dis(gen);
-}
+#include "Utils.h"
 
 Board& Board::GetInstance()
 {
@@ -86,8 +76,7 @@ XMFLOAT3 Board::GetOrigin()
 
 bool Board::IsInBounds(int row, int col, int margin)
 {
-    return row >= margin && row < m_grid.GetColSize() - margin
-        && col >= margin && col < m_grid.GetRowSize() - margin;
+    return row >= margin && row < m_grid.GetColSize() - margin && col >= margin && col < m_grid.GetRowSize() - margin;
 }
 
 bool Board::IsWalkable(int row, int col)
@@ -172,7 +161,7 @@ void Board::GenerateMaze(Player& entity)
         {
             if (m_grid[i][j]->GetIsWall())
             {
-                m_grid[i][j]->SetLevel(GetRandomNumber(1, 2));
+                m_grid[i][j]->SetLevel(Utils::GetRandomNumber(1, 2));
             }
         }
     }

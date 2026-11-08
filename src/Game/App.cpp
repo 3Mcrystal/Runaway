@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Resource.h"
+#include "Utils.h"
 
 App::App()
 {
@@ -45,6 +46,10 @@ void App::OnUpdate()
 	HandleInput();
 
 	UpdateEntity(dt);
+
+	CheckScore();
+
+	m_DistanceFromBonus = Utils::Distance(m_pPlayer->GetTransform().pos, m_pBonus->GetTransform().pos);
 
 	// // // // // //
 }
@@ -97,6 +102,7 @@ void App::DrawInfoText()
 	cpu_stats& stats = *cpuEngine.GetStats();
 	std::string info = CPU_STR(cpuTime.fps) + " fps, ";
 	info += CPU_STR(m_score) + " : score, ";
+	info += CPU_STR(abs(m_DistanceFromBonus.x)) +" "+ CPU_STR(abs(m_DistanceFromBonus.y)) +" "+ CPU_STR(abs(m_DistanceFromBonus.z)) + " : distance from bonus, ";
 	info += CPU_STR(stats.drawnTriangleCount) + " : triangles, ";
 	info += CPU_STR(stats.clipEntityCount) + " : clipped entities\n";
 
@@ -104,6 +110,7 @@ void App::DrawInfoText()
 
 	std::string info = CPU_STR(cpuTime.fps) + " fps, ";
 	info += CPU_STR(m_score) + " : score ";
+	info += CPU_STR(abs(m_DistanceFromBonus.x)) + " " + CPU_STR(abs(m_DistanceFromBonus.y)) + " " + CPU_STR(abs(m_DistanceFromBonus.z)) + " : distance from bonus";
 
 #endif // _DEBUG
 
@@ -156,12 +163,27 @@ void App::HandleInput()
 	}
 }
 
+void App::CheckScore()
+{
+	Board& m_pBoard = Board::GetInstance();
+	std::pair<std::pair<int, int>, float> player = { m_pPlayer->WorldToGrid(m_pPlayer->GetTransform().pos), m_pBoard.GetStandHeight(m_pPlayer->WorldToGrid(m_pPlayer->GetTransform().pos).first,m_pPlayer->WorldToGrid(m_pPlayer->GetTransform().pos).second)};
+	std::pair<std::pair<int, int>, float> bonus  = { m_pBonus->WorldToGrid(m_pBonus->GetTransform().pos),  m_pBoard.GetStandHeight(m_pBonus->WorldToGrid(m_pBonus->GetTransform().pos).first,m_pBonus->WorldToGrid(m_pBonus->GetTransform().pos).second)};
+	if (player == bonus)
+	{
+		m_score = m_score + 1;
+		int row = Utils::GetRandomNumber(2, m_pBoard.GetGrid().GetColSize() - 2);
+		int col = Utils::GetRandomNumber(2, m_pBoard.GetGrid().GetRowSize() - 2);
+		m_pBonus->GetTransform().pos = m_pBonus->GridToWorld(row, col);
+		m_pBonus->GetTransform().pos.y = m_pBoard.GetStandHeight(row, col);
+	}
+}
+
 void App::LoadResources()
 {
 	m_pPlayer = new Player;
-	//m_pBonus = new Bonus;
-	Board& m_pBoard = Board::GetInstance();
+	m_pBonus = new Bonus;
 	//m_pEnemy = new Enemy;
+	Board& m_pBoard = Board::GetInstance();
 
 	m_pBoard.GenerateMaze(*m_pPlayer);
 
@@ -171,7 +193,7 @@ void App::LoadResources()
 	mOrigin = { (0 - gridW) * 0.5f, (0 - gridH) * 0.5f ,(0)};
 
 	m_entityToUpdate.push_back(m_pPlayer);
-	//m_entityToUpdate.push_back(m_pBonus);
+	m_entityToUpdate.push_back(m_pBonus);
 	//m_entityToUpdate.push_back(m_pEnemy);
 	
 	m_pBoard.Init();
