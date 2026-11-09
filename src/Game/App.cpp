@@ -28,9 +28,9 @@ void App::OnStart()
 
 	LoadResources();
 
-	cpuEngine.GetCamera()->transform.pos = XMFLOAT3(-50.f, 50.f, 0.f);
+	cpuEngine.GetCamera()->transform.pos = XMFLOAT3(0.f, 50.f, 0.f);
 
-	cpuEngine.GetCamera()->transform.LookAt(0.f,0.f,0.f, CPU_VEC3_UP);
+	cpuEngine.GetCamera()->transform.LookAt(0.f,0.f,0.f, CPU_VEC3_RIGHT);
 	
 }
 
