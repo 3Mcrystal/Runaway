@@ -39,6 +39,7 @@ private:
 	bool FindFreeCell(int& row, int& col);
 	void HandleInput();
 	void CheckScore();
+	void SaveBestScore();
 
 private: // Debug //
 
@@ -74,7 +75,7 @@ private:
 	//Serializer m_Serializer;
 
 	int m_score = 0;
-	int m_Bestscore = 0;
+	int m_Bestscore;
 
 	bool m_gameOver = false;
 
