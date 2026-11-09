@@ -4,6 +4,7 @@
 #include "Enemy.h"
 #include "Board.h"
 #include "Bonus.h"
+#include <AgentManager.h>
 
 class App
 {
@@ -32,6 +33,8 @@ private:
 	inline static App* s_pApp = nullptr;
 
 	void UpdateEntity(float dt);
+	void CreateEnemy(int row, int col, bool chase, int destRow = 1, int destCol = 1);
+	bool FindFreeCell(int& row, int& col, int direction);
 	void HandleInput();
 
 private: // Debug //
@@ -58,7 +61,8 @@ private:
 
 	Player* m_pPlayer = nullptr;
 	Bonus* m_pBonus = nullptr;
-	Enemy* m_pEnemy = nullptr;
+	AgentManager* m_pAgentManager = nullptr;
+	std::vector<Enemy*> m_pEnemies;
 
 	XMFLOAT3 mOrigin = { 0.f, 0.f ,0.f};
 

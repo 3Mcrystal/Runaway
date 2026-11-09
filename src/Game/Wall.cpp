@@ -5,11 +5,12 @@
 
 Wall::Wall()
 {
-	m_height = 1;
-	mesh_addon* tMesh;
-	tMesh = new mesh_addon;
-	tMesh->CreateRectangleBlock(CELL_SIZE/2, m_height, CELL_SIZE/2);
-	GetEntity()->pMesh = tMesh;
+	//m_height = 1; //redundant
+	//Remove block + delete in I also fix the leak
+	//mesh_addon* tMesh;
+	//tMesh = new mesh_addon;
+	//tMesh->CreateRectangleBlock(CELL_SIZE/2, m_height, CELL_SIZE/2);
+	//GetEntity()->pMesh = tMesh;
 }
 
 Wall::~Wall()
@@ -32,6 +33,9 @@ void Wall::Init(float x, float y, float z)
 	GetEntity()->transform.pos.y = y;
 	GetEntity()->transform.pos.z = z;
 	m_height = board.GetGrid().GetNode(WorldToGrid({ x,y,z }).first, WorldToGrid({ x,y,z }).second)->GetLevel();
+
+	//delete the first mesh (fixed mem leak)
+	delete GetEntity()->pMesh; //if Init is called again, just in case
 
 	mesh_addon* tMesh;
 	tMesh = new mesh_addon;

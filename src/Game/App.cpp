@@ -22,7 +22,7 @@ App::~App()
 
 void App::OnStart()
 {
-	// Resources
+	//Resources
 	m_font.Create(cpuDevice.GetHeight() <= 512 ? 14 : 28);
 
 	LoadResources();
@@ -43,6 +43,9 @@ void App::OnUpdate()
 	// Handle Input //
 
 	HandleInput();
+
+	if (m_pAgentManager != nullptr)
+		m_pAgentManager->Update(dt);
 
 	UpdateEntity(dt);
 
@@ -126,6 +129,62 @@ void App::UpdateEntity(float dt)
 	}
 }
 
+bool App::FindFreeCell(int& row, int& col, int direction)
+{
+	Grid& grid = m_pBoard.GetGrid();
+
+	int lines = grid.GetColSize();
+	int columns = grid.GetRowSize();
+
+	for (int i = 0; i < lines * columns; i++)
+	{
+		int index = (row * columns + col + i * direction + lines * columns) % (lines * columns);
+		Node* node = grid[index / columns][index % columns];
+
+		if (node->GetIsWall() == false && node->GetIsBlocked() == false)
+		{
+			row = index / columns;
+			col = index % columns;
+			return true;
+		}
+	}
+	return false;
+}
+
+void App::CreateEnemy(int row, int col, bool chase)
+{
+	if (FindFreeCell(row, col, -1) == false)
+		return;
+
+	Agent* agent = m_pAgentManager->CreateAgent(row, col);
+
+	if (agent == nullptr)
+		return;
+
+	Enemy* enemy = new Enemy;
+	enemy->SetAgent(agent);
+
+	if (chase)
+	{
+		enemy->SetTarget(m_pPlayer);
+	}
+	else
+	{
+		//patrol start cell to first free cell of the top left corner (temp) 
+		int destRow = 1;
+		int destCol = 1;
+
+		if (FindFreeCell(destRow, destCol, 1))
+		{
+			agent->SetPatrol(true);
+			agent->SetDestination(destRow, destCol);
+		}
+	}
+
+	m_pEnemies.push_back(enemy);
+	m_entityToUpdate.push_back(enemy);
+}
+
 void App::HandleInput()
 {
 	if (cpuInput.IsBackPressed())
@@ -161,8 +220,6 @@ void App::LoadResources()
 	m_pPlayer = new Player;
 	//m_pBonus = new Bonus;
 	Board& m_pBoard = Board::GetInstance();
-	//m_pEnemy = new Enemy;
-
 	m_pBoard.GenerateMaze(*m_pPlayer);
 
 	const float gridW = m_pBoard.GetGrid().GetRowSize() * CELL_SIZE;
@@ -172,7 +229,18 @@ void App::LoadResources()
 
 	m_entityToUpdate.push_back(m_pPlayer);
 	//m_entityToUpdate.push_back(m_pBonus);
-	//m_entityToUpdate.push_back(m_pEnemy);
+
+	//Enemies 2 chase, 1 patrols (test/temp)
+	m_pAgentManager = new AgentManager(m_pBoard.GetGrid());
+
+	//Last row / col are walls,
+	//search  backward
+	const int lastRow = m_pBoard.GetGrid().GetColSize() - 1;
+	const int lastCol = m_pBoard.GetGrid().GetRowSize() - 1;
+
+	CreateEnemy(lastRow, 1, false);
+	CreateEnemy(lastRow, lastCol, true);
+	CreateEnemy(1, lastCol, true);
 	
 	m_pBoard.Init();
 
@@ -182,9 +250,16 @@ void App::LoadResources()
 
 void App::ReleaseRessources()
 {
+	for (Enemy* enemy : m_pEnemies)
+		delete enemy;
+
+	m_pEnemies.clear();
+
+	delete m_pAgentManager;
+	m_pAgentManager = nullptr;
+
 	delete m_pPlayer;
 	delete m_pBonus;
-	delete m_pEnemy;
 	m_pBoard.DestroyInstance();
 }
 
