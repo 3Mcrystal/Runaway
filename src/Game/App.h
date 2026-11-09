@@ -33,8 +33,8 @@ private:
 	inline static App* s_pApp = nullptr;
 
 	void UpdateEntity(float dt);
-	void CreateEnemy(int row, int col, bool chase);
-	bool FindFreeCell(int& row, int& col, int direction);
+	void CreateEnemy(int row, int col, int destRow, int destCol);
+	bool FindFreeCell(int& row, int& col);
 	void HandleInput();
 	void CheckScore();
 
@@ -70,5 +70,7 @@ private:
 	XMFLOAT3 m_DistanceFromBonus;
 
 	int m_score = 0;
+
+	bool m_gameOver = false;
 
 };
