@@ -1,10 +1,12 @@
 #pragma once
-#include <vector>
 #include "Player.h"
 #include "Enemy.h"
 #include "Board.h"
 #include "Bonus.h"
+#include "Serializer.h"
+
 #include <AgentManager.h>
+#include <vector>
 
 class App
 {
@@ -69,6 +71,9 @@ private:
 
 	XMFLOAT3 m_DistanceFromBonus;
 
+	Serializer m_Serializer;
+
 	int m_score = 0;
+	int m_Bestscore = 0;
 
 };

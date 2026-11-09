@@ -28,7 +28,7 @@ void App::OnStart()
 
 	LoadResources();
 
-	cpuEngine.GetCamera()->transform.pos = XMFLOAT3(-20.f, 50.f, 0.f);
+	cpuEngine.GetCamera()->transform.pos = XMFLOAT3(-50.f, 50.f, 0.f);
 
 	cpuEngine.GetCamera()->transform.LookAt(0.f,0.f,0.f, CPU_VEC3_UP);
 	
@@ -112,8 +112,9 @@ void App::DrawInfoText()
 #else
 
 	std::string info = CPU_STR(cpuTime.fps) + " fps, ";
-	info += CPU_STR(m_score) + " : score ";
-	info += CPU_STR(abs(m_DistanceFromBonus.x)) + " " + CPU_STR(abs(m_DistanceFromBonus.y)) + " " + CPU_STR(abs(m_DistanceFromBonus.z)) + " : distance from bonus";
+	info += CPU_STR(m_score) + " : score, ";
+	info += CPU_STR(m_Bestscore) + " : meilleure score, ";
+	info += CPU_STR(abs(static_cast<int>(m_DistanceFromBonus.x))) + " " + CPU_STR(abs(static_cast<int>(m_DistanceFromBonus.y))) + " " + CPU_STR(abs(static_cast<int>(m_DistanceFromBonus.z))) + " : distance from bonus";
 
 #endif // _DEBUG
 
@@ -269,6 +270,9 @@ void App::LoadResources()
 
 	for (BaseEntity* e : m_entityToUpdate)
 		e->Init();
+
+	m_Serializer.Load("../../res/Game/score.json");
+	m_Serializer.Read("score",m_Bestscore);
 }
 
 void App::ReleaseRessources()
@@ -284,6 +288,10 @@ void App::ReleaseRessources()
 	delete m_pPlayer;
 	delete m_pBonus;
 	m_pBoard.DestroyInstance();
+
+	if (m_Bestscore < m_score)
+		m_Serializer.Write("score", m_score);
+	m_Serializer.Save("../../res/Game/score.json");
 }
 
 void App::MyPixelShader(cpu_ps_io& io)

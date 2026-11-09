@@ -68,7 +68,7 @@ bool Player::MoveTowards(XMFLOAT3 target, float dt)
 
 	XMFLOAT3 pos = GetTransform().pos;
 	XMFLOAT3 d = { target.x - pos.x, target.y - pos.y, target.z - pos.z };
-	float distsquare = d.x * d.x + d.y * d.y + d.z * d.z;
+	float distsquare = Utils::LengthSqr(d);
 
 	if (distsquare <= step * step)
 	{
@@ -76,7 +76,7 @@ bool Player::MoveTowards(XMFLOAT3 target, float dt)
 		return true;
 	}
 
-	float dist = sqrt(distsquare);
+	float dist = Utils::Length(d);
 	GetTransform().SetPosition(pos.x + d.x / dist * step, pos.y + d.y / dist * step, pos.z + d.z / dist * step);
 	return false;
 }
@@ -89,7 +89,7 @@ void Player::QueueMove(int row, int col)
 	XMFLOAT3 to = GridToWorld(row, col);
 	to.y = board.GetStandHeight(row, col);
 
-	const float eps = 0.01f;// permet de detecter une différence de hauteur entre deux cases en évitant les problèmes d'arrondi
+	const float eps = 0.01f;// permet de detecter une différence de hauteur entre deux cases en évitant les problèmes d'arrondi // c'est vachement bien
 
 	if (to.y > from.y + eps)		// montee : vertical puis horizontal
 	{

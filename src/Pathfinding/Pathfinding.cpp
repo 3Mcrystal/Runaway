@@ -39,8 +39,8 @@ void Pathfinding::BFS(Grid& g, Node* start, Node* target)
     Node* s = g[start->GetX()][start->GetY()];
     Node* t = g[target->GetX()][target->GetY()];
 
-	std::vector<std::vector<bool>>  visited(lines, std::vector<bool>(cols, false));//j'adore cette feature //Crée un tableau de tableau de booléens pour savoir si on a déjà visité une case
-	std::vector<std::vector<Node*>> parent(lines, std::vector<Node*>(cols, nullptr));//Crée un tableau de tableau de pointeurs vers les parents pour reconstruire le chemin
+	std::vector<std::vector<bool>>  visited   (lines, std::vector<bool>(cols, false));//Crée un tableau de tableau de booléens pour savoir si on a déjà visité une case // j'adore cette feature 
+	std::vector<std::vector<Node*>> parent (lines, std::vector<Node*>(cols, nullptr));//Crée un tableau de tableau de pointeurs vers les parents pour reconstruire le chemin
     std::queue<Node*> toVisit;
 
     const int dx[4] = { -1, 1, 0, 0 };
@@ -104,7 +104,7 @@ void Pathfinding::Djikstra(Grid& g, Node* start, Node* target)
     const int lines = g.GetColSize();
     const int cols = g.GetRowSize();
 
-	const int INF = std::numeric_limits<int>::max();// Valeur maximale d'un int pour représenter l'infini
+	constexpr int INF = std::numeric_limits<int>::max();// Valeur maximale d'un int pour représenter l'infini
 
     Node* s = g[start->GetX()][start->GetY()];
     Node* t = g[target->GetX()][target->GetY()];
@@ -113,6 +113,7 @@ void Pathfinding::Djikstra(Grid& g, Node* start, Node* target)
     std::vector<std::vector<Node*>> parent(lines, std::vector<Node*>(cols, nullptr));
 
     // File de priorité : le plus petit coût sort en premier
+
     using QueueItem = std::pair<int, Node*>;   // (coût, case)
     std::priority_queue<QueueItem, std::vector<QueueItem>, std::greater<QueueItem>> toVisit;
 

@@ -5,12 +5,6 @@
 
 Wall::Wall()
 {
-	//m_height = 1; //redundant
-	//Remove block + delete in I also fix the leak
-	//mesh_addon* tMesh;
-	//tMesh = new mesh_addon;
-	//tMesh->CreateRectangleBlock(CELL_SIZE/2, m_height, CELL_SIZE/2);
-	//GetEntity()->pMesh = tMesh;
 }
 
 Wall::~Wall()
