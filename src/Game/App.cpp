@@ -241,7 +241,6 @@ void App::LoadResources()
 {
 	m_pPlayer = new Player;
 	m_pBonus = new Bonus;
-	//m_pEnemy = new Enemy;
 	Board& m_pBoard = Board::GetInstance();
 
 	m_pBoard.GenerateMaze(*m_pPlayer);
