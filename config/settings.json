@@ -1,5 +1,94 @@
 {
     "projects": {
+        "51671FB4-2BB2-6F37-4997-795964624F8F": {
+            "config-debug": {
+                "additionalDependencies": [
+                    "SDL3-static.lib",
+                    "version.lib",
+                    "imm32.lib",
+                    "cfgmgr32.lib",
+                    "setupapi.lib",
+                    "winmm.lib",
+                    "gdi32.lib",
+                    "user32.lib",
+                    "shell32.lib",
+                    "ole32.lib",
+                    "oleaut32.lib",
+                    "advapi32.lib",
+                    "SDL3_ttf-static.lib",
+                    "usp10.lib",
+                    "rpcrt4.lib"
+                ],
+                "additionalIncludeDirectories": [
+                    "$(SolutionDir)../lib/SDL3/include",
+                    "$(SolutionDir)../lib/SDL3/include/TTF"
+                ],
+                "additionalLibraryDirectories": [
+                    "$(SolutionDir)../lib/SDL3/lib/x64"
+                ],
+                "preprocessorDefinitions": []
+            },
+            "config-release": {
+                "additionalDependencies": [],
+                "additionalIncludeDirectories": [],
+                "additionalLibraryDirectories": [],
+                "preprocessorDefinitions": []
+            },
+            "dependencies": [ 
+                "51DC0733-7BD8-271F-7414-218B1A1233E9",
+                "5C700DE3-6317-73C1-6A24-42452AB676D3"
+        ],
+            "dependents": [],
+            "name": "Sandbox",
+            "property-lib": false,
+            "property-pch": false,
+            "property-vcpkg": false,
+            "property-window": false
+        },
+        "51DC0733-7BD8-271F-7414-218B1A1233E9": {
+            "config-debug": {
+                "additionalDependencies": [
+                    "SDL3-static.lib",
+                    "version.lib",
+                    "imm32.lib",
+                    "cfgmgr32.lib",
+                    "setupapi.lib",
+                    "winmm.lib",
+                    "gdi32.lib",
+                    "user32.lib",
+                    "shell32.lib",
+                    "ole32.lib",
+                    "oleaut32.lib",
+                    "advapi32.lib",
+                    "SDL3_ttf-static.lib",
+                    "usp10.lib",
+                    "rpcrt4.lib"
+                ],
+                "additionalIncludeDirectories": [
+                    "$(SolutionDir)../lib/SDL3/include",
+                    "$(SolutionDir)../lib/SDL3/include/TTF"
+                ],
+                "additionalLibraryDirectories": [
+                    "$(SolutionDir)../lib/SDL3/lib/x64"
+                ],
+                "preprocessorDefinitions": []
+            },
+            "config-release": {
+                "additionalDependencies": [],
+                "additionalIncludeDirectories": [],
+                "additionalLibraryDirectories": [],
+                "preprocessorDefinitions": []
+            },
+            "dependencies": [],
+            "dependents": [
+                "51671FB4-2BB2-6F37-4997-795964624F8F"
+            ],
+            "name": "LightEngine",
+            "property-lib": true,
+            "property-pch": false,
+            "property-vcpkg": false,
+            "property-window": false
+        },
         "57F808AD-5200-52E2-2C1C-7578203C399E": {
             "config-debug": {
                 "additionalDependencies": [
@@ -29,7 +118,9 @@
                 ],
                 "preprocessorDefinitions": []
             },
-            "dependencies": [ "5C700DE3-6317-73C1-6A24-42452AB676D3"],
+            "dependencies": [
+                "5C700DE3-6317-73C1-6A24-42452AB676D3"
+            ],
             "dependents": [],
             "name": "Game",
             "property-lib": false,
@@ -51,7 +142,10 @@
                 "preprocessorDefinitions": []
             },
             "dependencies": [],
-            "dependents": ["57F808AD-5200-52E2-2C1C-7578203C399E"],
+            "dependents": [
+                "57F808AD-5200-52E2-2C1C-7578203C399E",
+                "51671FB4-2BB2-6F37-4997-795964624F8F"
+            ],
             "name": "Pathfinding",
             "property-lib": true,
             "property-pch": false,
@@ -61,7 +155,9 @@
     },
     "projects_name_to_guid": {
         "Game": "57F808AD-5200-52E2-2C1C-7578203C399E",
-        "Pathfinding": "5C700DE3-6317-73C1-6A24-42452AB676D3"
+        "LightEngine": "51DC0733-7BD8-271F-7414-218B1A1233E9",
+        "Pathfinding": "5C700DE3-6317-73C1-6A24-42452AB676D3",
+        "Sandbox": "51671FB4-2BB2-6F37-4997-795964624F8F"
     },
     "solution_guid": "5B8E3CDB-1423-1DF1-0E0A-1FE563CF0BD1",
     "solution_name": "Pathfinding",

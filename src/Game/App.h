@@ -3,7 +3,7 @@
 #include "Enemy.h"
 #include "Board.h"
 #include "Bonus.h"
-#include "Serializer.h"
+//#include "Serializer.h"
 
 #include <AgentManager.h>
 #include <vector>
@@ -71,7 +71,7 @@ private:
 
 	XMFLOAT3 m_DistanceFromBonus;
 
-	Serializer m_Serializer;
+	//Serializer m_Serializer;
 
 	int m_score = 0;
 	int m_Bestscore = 0;
