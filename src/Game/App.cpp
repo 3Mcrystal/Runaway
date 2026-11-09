@@ -45,10 +45,20 @@ void App::OnUpdate()
 
 	HandleInput();
 
+	// Game over : nothing moves anymore, Escape still works
+	if (m_gameOver)
+		return;
+
 	if (m_pAgentManager != nullptr)
 		m_pAgentManager->Update(dt);
 
 	UpdateEntity(dt);
+
+	for (Enemy* enemy : m_pEnemies)
+	{
+		if (enemy->IsTouchingPlayer())
+			m_gameOver = true;
+	}
 
 	CheckScore();
 
@@ -93,6 +103,13 @@ void App::OnRender(int pass)
 		//cpuDevice.DrawText(&m_font, TextMenu.c_str(), (int)(cpuDevice.GetWidth() * 0.5f), (int)(cpuDevice.GetHeight() * 0.5f), CPU_TEXT_CENTER, &tint);
 
 		DrawInfoText();
+
+		if (m_gameOver)
+		{
+			XMFLOAT3 red = { 1.f, 0.f, 0.f };
+			std::string text = "GAME OVER - score : " + CPU_STR(m_score) + " (Escape to quit)";
+			cpuDevice.DrawText(&m_font, text.c_str(), (int)(cpuDevice.GetWidth() * 0.5f), (int)(cpuDevice.GetHeight() * 0.5f), CPU_TEXT_CENTER, &red);
+		}
 		break;
 	}
 	}
@@ -138,31 +155,46 @@ void App::UpdateEntity(float dt)
 	}
 }
 
-bool App::FindFreeCell(int& row, int& col, int direction)
+bool App::FindFreeCell(int& row, int& col)
 {
 	Grid& grid = m_pBoard.GetGrid();
 
 	int lines = grid.GetColSize();
 	int columns = grid.GetRowSize();
 
-	for (int i = 0; i < lines * columns; i++)
-	{
-		int index = (row * columns + col + i * direction + lines * columns) % (lines * columns);
-		Node* node = grid[index / columns][index % columns];
+	int bestRow = -1;
+	int bestCol = -1;
+	int bestDistance = lines + columns + 1;
 
-		if (node->GetIsWall() == false && node->GetIsBlocked() == false)
+	for (int i = 0; i < lines; i++)
+	{
+		for (int j = 0; j < columns; j++)
 		{
-			row = index / columns;
-			col = index % columns;
-			return true;
+			if (grid[i][j]->GetIsWall() || grid[i][j]->GetIsBlocked())
+				continue;
+
+			int distance = abs(i - row) + abs(j - col);
+
+			if (distance < bestDistance)
+			{
+				bestDistance = distance;
+				bestRow = i;
+				bestCol = j;
+			}
 		}
 	}
-	return false;
+
+	if (bestRow == -1)
+		return false;
+
+	row = bestRow;
+	col = bestCol;
+	return true;
 }
 
-void App::CreateEnemy(int row, int col, bool chase)
+void App::CreateEnemy(int row, int col, int destRow, int destCol)
 {
-	if (FindFreeCell(row, col, -1) == false)
+	if (FindFreeCell(row, col) == false || FindFreeCell(destRow, destCol) == false)
 		return;
 
 	Agent* agent = m_pAgentManager->CreateAgent(row, col);
@@ -172,23 +204,8 @@ void App::CreateEnemy(int row, int col, bool chase)
 
 	Enemy* enemy = new Enemy;
 	enemy->SetAgent(agent);
-
-	if (chase)
-	{
-		enemy->SetTarget(m_pPlayer);
-	}
-	else
-	{
-		//patrol start cell to first free cell of the top left corner (temp) 
-		int destRow = 1;
-		int destCol = 1;
-
-		if (FindFreeCell(destRow, destCol, 1))
-		{
-			agent->SetPatrol(true);
-			agent->SetDestination(destRow, destCol);
-		}
-	}
+	enemy->SetTarget(m_pPlayer);
+	enemy->SetPatrolRoute(destRow, destCol);
 
 	m_pEnemies.push_back(enemy);
 	m_entityToUpdate.push_back(enemy);
@@ -254,18 +271,14 @@ void App::LoadResources()
 
 	m_entityToUpdate.push_back(m_pPlayer);
 	m_entityToUpdate.push_back(m_pBonus);
-
-	//Enemies 2 chase, 1 patrols (test/temp)
 	m_pAgentManager = new AgentManager(m_pBoard.GetGrid());
 
-	//Last row / col are walls,
-	//search  backward
 	const int lastRow = m_pBoard.GetGrid().GetColSize() - 1;
 	const int lastCol = m_pBoard.GetGrid().GetRowSize() - 1;
 
-	CreateEnemy(lastRow, 1, false);
-	CreateEnemy(lastRow, lastCol, true);
-	CreateEnemy(1, lastCol, true);
+	CreateEnemy(lastRow, 1, 1, 1);
+	CreateEnemy(lastRow, lastCol, 1, lastCol / 2);
+	CreateEnemy(1, lastCol, lastRow / 2, 1);
 	
 	m_pBoard.Init();
 
