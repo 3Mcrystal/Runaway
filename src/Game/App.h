@@ -33,7 +33,7 @@ private:
 	inline static App* s_pApp = nullptr;
 
 	void UpdateEntity(float dt);
-	void CreateEnemy(int row, int col, bool chase, int destRow = 1, int destCol = 1);
+	void CreateEnemy(int row, int col, bool chase);
 	bool FindFreeCell(int& row, int& col, int direction);
 	void HandleInput();
 	void CheckScore();
