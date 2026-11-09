@@ -10,14 +10,15 @@ class Board
 private:
 
 	Grid m_grid;
+
 	std::mt19937 m_RNG;
 
 	Floor* m_floor = nullptr;
-	std::vector<Wall*> m_walls;
 
 	inline static Board* s_instance = nullptr;
 
-	std::vector<Wall*> m_BoardElementToUpdate;
+	std::vector<Wall*> m_walls;
+	std::vector <BaseEntity*> m_BoardElementToUpdate;
 
 	XMFLOAT3 mOrigin;
 
@@ -26,7 +27,7 @@ private:
 
 public:
 
-	static Board &GetInstance();
+	static Board& GetInstance();
 	void DestroyInstance();
 
 	Board();
@@ -40,13 +41,13 @@ public:
 	Grid& GetGrid();
 	XMFLOAT3 GetOrigin();
 
-	//Set
-
 	// // //
 
-	bool IsInBounds(XMFLOAT3 pos);
+	bool IsInBounds(int row, int col, int margin);
 
 	bool IsWalkable(int row, int col);
+
+	float GetStandHeight(int row, int col);
 
 	void CarveMaze(int x, int y);
 	void AddSpawn(Player& entity);

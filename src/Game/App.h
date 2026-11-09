@@ -36,6 +36,7 @@ private:
 	void CreateEnemy(int row, int col, bool chase, int destRow = 1, int destCol = 1);
 	bool FindFreeCell(int& row, int& col, int direction);
 	void HandleInput();
+	void CheckScore();
 
 private: // Debug //
 
@@ -66,5 +67,8 @@ private:
 
 	XMFLOAT3 mOrigin = { 0.f, 0.f ,0.f};
 
+	XMFLOAT3 m_DistanceFromBonus;
+
 	int m_score = 0;
+
 };
