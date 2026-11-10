@@ -118,9 +118,6 @@ void App::OnRender(int pass)
 	}
 	case CPU_PASS_UI_END:
 	{
-		//XMFLOAT3 tint = { 0.f, 0.f, 0.5f };
-		//cpuDevice.DrawText(&m_font, TextMenu.c_str(), (int)(cpuDevice.GetWidth() * 0.5f), (int)(cpuDevice.GetHeight() * 0.5f), CPU_TEXT_CENTER, &tint);
-
 		DrawInfoText();
 
 		std::string text;
@@ -144,7 +141,6 @@ void App::OnRender(int pass)
 			cpuDevice.DrawText(&m_font, text.c_str(), (int)(cpuDevice.GetWidth() * 0.5f), (int)(cpuDevice.GetHeight() * 0.5f), CPU_TEXT_CENTER, &color);
 			break;
 		}
-		
 		break;
 	}
 	}

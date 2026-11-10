@@ -72,8 +72,6 @@ private:
 
 	XMFLOAT3 m_DistanceFromBonus = { 0.f,0.f,0.f };
 
-	//Serializer m_Serializer;
-
 	int m_score = 0;
 	int m_Bestscore;
 
