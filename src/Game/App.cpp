@@ -7,6 +7,15 @@
 #include <fstream>
 #include <sstream>
 
+enum mState
+{
+	START,
+	PLAY,
+	PAUSE,
+	END,
+	COUNT
+};
+
 App::App()
 {
 	s_pApp = this;
@@ -14,6 +23,8 @@ App::App()
 	CPU_CALLBACK_UPDATE(OnUpdate);
 	CPU_CALLBACK_EXIT(OnExit);
 	CPU_CALLBACK_RENDER(OnRender);
+
+	m_state = START;
 
 	m_rts[0] = cpuEngine.CreateRT();
 }
@@ -51,7 +62,7 @@ void App::OnUpdate()
 	HandleInput();
 
 	// Game over : nothing moves anymore, Escape still works
-	if (m_gameOver)
+	if (m_state == END || m_state == START || m_state == PAUSE)
 		return;
 
 	if (m_pAgentManager != nullptr)
@@ -63,7 +74,7 @@ void App::OnUpdate()
 	{
 		if (enemy->IsTouchingPlayer())
 		{
-			m_gameOver = true;
+			m_state = END;
 			SaveBestScore();
 		}
 	}
@@ -112,12 +123,28 @@ void App::OnRender(int pass)
 
 		DrawInfoText();
 
-		if (m_gameOver)
+		std::string text;
+		XMFLOAT3 color;
+
+		switch (m_state)
 		{
-			XMFLOAT3 red = { 1.f, 0.f, 0.f };
-			std::string text = "GAME OVER - score : " + CPU_STR(m_score) + " (Escape to quit)";
-			cpuDevice.DrawText(&m_font, text.c_str(), (int)(cpuDevice.GetWidth() * 0.5f), (int)(cpuDevice.GetHeight() * 0.5f), CPU_TEXT_CENTER, &red);
+		case END:
+			color = { 1.f, 0.f, 0.f };
+			text = "GAME OVER - score : " + CPU_STR(m_score) + " (Escape to quit)";
+			cpuDevice.DrawText(&m_font, text.c_str(), (int)(cpuDevice.GetWidth() * 0.5f), (int)(cpuDevice.GetHeight() * 0.5f), CPU_TEXT_CENTER, &color);
+			break;
+		case PAUSE:
+			color = { 1.f, 0.f, 0.f };
+			text = "Pause (Enter to continue) (Escape to quit)";
+			cpuDevice.DrawText(&m_font, text.c_str(), (int)(cpuDevice.GetWidth() * 0.5f), (int)(cpuDevice.GetHeight() * 0.5f), CPU_TEXT_CENTER, &color);
+			break;
+		case START:
+			color = { 1.f, 0.f, 0.f };
+			text = "Hello kind Sir (Enter to play) (Escape to quit)";
+			cpuDevice.DrawText(&m_font, text.c_str(), (int)(cpuDevice.GetWidth() * 0.5f), (int)(cpuDevice.GetHeight() * 0.5f), CPU_TEXT_CENTER, &color);
+			break;
 		}
+		
 		break;
 	}
 	}
@@ -222,7 +249,34 @@ void App::CreateEnemy(int row, int col, int destRow, int destCol)
 void App::HandleInput()
 {
 	if (cpuInput.IsBackPressed())
-		cpuEngine.Quit();
+	{
+		if (m_state == PAUSE)
+		{
+			SaveBestScore();
+			cpuEngine.Quit();
+		}
+		if (m_state == PLAY)
+		{
+			m_state = PAUSE;
+		}
+		if (m_state == END)
+		{
+			cpuEngine.Quit();
+		}
+		if (m_state == START)
+		{
+			cpuEngine.Quit();
+		}
+	}
+
+	if (cpuInput.vi.IsKeyPressed(13))
+	{
+		if (m_state == START)
+			m_state = PLAY;
+
+		if(m_state == PAUSE)
+			m_state = PLAY;
+	}
 
 	if (cpuInput.vi.IsKeyPressed(90))
 	{
@@ -270,7 +324,7 @@ void App::SaveBestScore()
 		return;
 
 	m_Bestscore = m_score;
-	std::ofstream file("../res/Game/score.txt");
+	std::ofstream file("../../res/Game/score.txt");
 	if (file.is_open())
 		file << m_Bestscore;
 }
@@ -304,10 +358,10 @@ void App::LoadResources()
 	for (BaseEntity* e : m_entityToUpdate)
 		e->Init();
 
-	std::ifstream file("../Game/score.txt");
+	std::ifstream file("../../res/Game/score.txt");
 	if (file.is_open())
 	{
-		file >> m_Bestscore;   // lit l'entier directement
+		file >> m_Bestscore;
 		file.close();
 	}
 }
@@ -325,16 +379,6 @@ void App::ReleaseRessources()
 	delete m_pPlayer;
 	delete m_pBonus;
 	m_pBoard.DestroyInstance();
-
-	if (m_score > m_Bestscore)
-	{
-		std::ofstream file("../Game/score.txt");
-		if (file.is_open())
-		{
-			file << m_score;
-			file.close();
-		}
-	}
 }
 
 void App::MyPixelShader(cpu_ps_io& io)
