@@ -2,6 +2,11 @@
 #include "Resource.h"
 #include "Utils.h"
 
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+
 App::App()
 {
 	s_pApp = this;
@@ -57,7 +62,10 @@ void App::OnUpdate()
 	for (Enemy* enemy : m_pEnemies)
 	{
 		if (enemy->IsTouchingPlayer())
+		{
 			m_gameOver = true;
+			SaveBestScore();
+		}
 	}
 
 	CheckScore();
@@ -256,6 +264,17 @@ void App::CheckScore()
 	}
 }
 
+void App::SaveBestScore()
+{
+	if (m_score <= m_Bestscore)
+		return;
+
+	m_Bestscore = m_score;
+	std::ofstream file("../res/Game/score.txt");
+	if (file.is_open())
+		file << m_Bestscore;
+}
+
 void App::LoadResources()
 {
 	m_pPlayer = new Player;
@@ -285,6 +304,12 @@ void App::LoadResources()
 	for (BaseEntity* e : m_entityToUpdate)
 		e->Init();
 
+	std::ifstream file("../Game/score.txt");
+	if (file.is_open())
+	{
+		file >> m_Bestscore;   // lit l'entier directement
+		file.close();
+	}
 }
 
 void App::ReleaseRessources()
@@ -301,6 +326,15 @@ void App::ReleaseRessources()
 	delete m_pBonus;
 	m_pBoard.DestroyInstance();
 
+	if (m_score > m_Bestscore)
+	{
+		std::ofstream file("../Game/score.txt");
+		if (file.is_open())
+		{
+			file << m_score;
+			file.close();
+		}
+	}
 }
 
 void App::MyPixelShader(cpu_ps_io& io)
