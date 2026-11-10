@@ -1,6 +1,6 @@
 #include "BaseEntity.h"
 
-class Teleporter : public BaseEntity
+class Teleporter
 {
 private:
 
@@ -9,5 +9,8 @@ private:
 
 public:
 
-	void Init()override;
+	Teleporter();
+	~Teleporter();
+
+	void Init();
 };
