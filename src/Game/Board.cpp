@@ -132,6 +132,28 @@ void Board::CarveMaze(int x, int y)
     }
 }
 
+//Removes random walls
+void Board::OpenMaze()
+{
+    //inner cells only
+    for (int i = 1; i < m_grid.GetColSize() - 1; i++)
+    {
+        for (int j = 1; j < m_grid.GetRowSize() - 1; j++)
+        {
+            // Skip cell if is already free or if roll fails :
+            if (m_grid[i][j]->GetIsWall() == false || (int)(m_RNG() % 100) >= m_wallPercent)
+                continue;
+
+            //Is one / more of 4 neighbours free cell ?
+            bool touchesFreeCell = m_grid[i - 1][j]->GetIsWall() == false || m_grid[i + 1][j]->GetIsWall() == false || m_grid[i][j - 1]->GetIsWall() == false || m_grid[i][j + 1]->GetIsWall() == false;
+
+			//wall touching a free cell is removed (avoid closed areas)
+            if (touchesFreeCell)
+                m_grid[i][j]->SetIsWall(false);
+        }
+    }
+}
+
 void Board::GenerateMaze(Player& entity)
 {
 
@@ -152,6 +174,8 @@ void Board::GenerateMaze(Player& entity)
     }
 
     CarveMaze(1, 1);
+
+    OpenMaze();
 
     AddSpawn(entity);
 
