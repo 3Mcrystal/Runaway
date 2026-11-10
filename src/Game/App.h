@@ -3,7 +3,7 @@
 #include "Enemy.h"
 #include "Board.h"
 #include "Bonus.h"
-//#include "Serializer.h"
+#include "Teleporter.h"
 
 #include <AgentManager.h>
 #include <vector>
@@ -39,6 +39,7 @@ private:
 	bool FindFreeCell(int& row, int& col);
 	void HandleInput();
 	void CheckScore();
+	void CheckTeleporter(float dt);
 	void SaveBestScore();
 
 private: // Debug //
@@ -65,6 +66,7 @@ private:
 
 	Player* m_pPlayer = nullptr;
 	Bonus* m_pBonus = nullptr;
+	Teleporter* m_pTeleporter = nullptr;
 	AgentManager* m_pAgentManager = nullptr;
 	std::vector<Enemy*> m_pEnemies;
 

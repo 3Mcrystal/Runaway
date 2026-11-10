@@ -4,6 +4,7 @@
 #include <grid.h>
 #include <random>
 #include <vector>
+#include "Teleporter.h"
 
 class Board
 {
@@ -53,6 +54,7 @@ public:
 	float GetStandHeight(int row, int col);
 
 	void CarveMaze(int x, int y);
+	void PlaceTeleporter(int row, int col, Teleporter& teleporter);
 	void OpenMaze();
 	void AddSpawn(Player& entity);
 	void GenerateMaze(Player& entity);

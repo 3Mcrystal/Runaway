@@ -79,6 +79,8 @@ void App::OnUpdate()
 		}
 	}
 
+	CheckTeleporter(dt);
+
 	CheckScore();
 
 	m_DistanceFromBonus = Utils::Distance(m_pPlayer->GetTransform().pos, m_pBonus->GetTransform().pos);
@@ -315,6 +317,41 @@ void App::CheckScore()
 	}
 }
 
+void App::CheckTeleporter(float dt)
+{
+	m_pTeleporter->SetTeleportCooldown(m_pTeleporter->GetTeleportCooldown() - dt);
+
+	if(m_pTeleporter->GetTeleportCooldown() <= 0.f)
+		m_pTeleporter->SetCanTeleport(true);
+	// Port1 to Port2
+	if (m_pTeleporter->GetPort1()->GetTransform().pos.x == m_pPlayer->GetTransform().pos.x && m_pTeleporter->GetPort1()->GetTransform().pos.z == m_pPlayer->GetTransform().pos.z && m_pTeleporter->CanTeleport())
+	{
+		XMFLOAT3 dest = m_pTeleporter->GetPort2()->GetTransform().pos;
+
+		std::pair<int, int> pos = m_pPlayer->WorldToGrid(dest);
+		dest.y = m_pBoard.GetStandHeight(pos.first, pos.second);
+
+		m_pPlayer->TeleportTo(dest);
+
+		m_pTeleporter->SetCanTeleport(false);
+		m_pTeleporter->SetBaseTeleportCooldown();
+	}
+
+	// Port2 to Port1
+	if (m_pTeleporter->GetPort2()->GetTransform().pos.x == m_pPlayer->GetTransform().pos.x && m_pTeleporter->GetPort2()->GetTransform().pos.z == m_pPlayer->GetTransform().pos.z && m_pTeleporter->CanTeleport())
+	{
+		XMFLOAT3 dest = m_pTeleporter->GetPort1()->GetTransform().pos;
+
+		std::pair<int, int> pos = m_pPlayer->WorldToGrid(dest);
+		dest.y = m_pBoard.GetStandHeight(pos.first, pos.second);
+
+		m_pPlayer->TeleportTo(dest);
+
+		m_pTeleporter->SetCanTeleport(false);
+		m_pTeleporter->SetBaseTeleportCooldown();
+	}
+}
+
 void App::SaveBestScore()
 {
 	if (m_score <= m_Bestscore)
@@ -330,6 +367,7 @@ void App::LoadResources()
 {
 	m_pPlayer = new Player;
 	m_pBonus = new Bonus;
+	m_pTeleporter = new Teleporter;
 	Board& m_pBoard = Board::GetInstance();
 
 	m_pBoard.GenerateMaze(*m_pPlayer);
@@ -351,6 +389,7 @@ void App::LoadResources()
 	CreateEnemy(1, lastCol, lastRow / 2, 1);
 	
 	m_pBoard.Init();
+	m_pTeleporter->Init();
 
 	for (BaseEntity* e : m_entityToUpdate)
 		e->Init();

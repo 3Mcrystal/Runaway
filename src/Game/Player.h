@@ -26,6 +26,7 @@ public:
 
 	bool MoveTowards(XMFLOAT3 target, float dt);
 	void QueueMove(int row, int col);
+	void TeleportTo(XMFLOAT3 position);
 
 	void Init() override;
 	void Update(float dt) override;

@@ -105,6 +105,15 @@ void Player::QueueMove(int row, int col)
 		m_PositionQueue.push(to);
 }
 
+void Player::TeleportTo(XMFLOAT3 position)
+{
+	// on remplace par une file vide
+	std::queue<XMFLOAT3>().swap(m_PositionQueue);
+
+	GetTransform().SetPosition(position.x, position.y, position.z);
+	m_TargetPos = position;
+}
+
 void Player::Init()
 {
 	GetEntity()->pMaterial = new cpu_material;
