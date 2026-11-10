@@ -178,15 +178,4 @@ void Board::GenerateMaze(Player& entity)
     OpenMaze();
 
     AddSpawn(entity);
-
-    for (int i = 0; i < m_grid.GetColSize(); i++)
-    {
-        for (int j = 0; j < m_grid.GetRowSize(); j++)
-        {
-            if (m_grid[i][j]->GetIsWall())
-            {
-                m_grid[i][j]->SetLevel(Utils::GetRandomNumber(1, 2));
-            }
-        }
-    }
 }

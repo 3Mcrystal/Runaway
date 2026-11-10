@@ -44,7 +44,7 @@ void App::OnStart()
 
 	LoadResources();
 
-	cpuEngine.GetCamera()->transform.pos = XMFLOAT3(0.f, 50.f, 0.f);
+	cpuEngine.GetCamera()->transform.pos = XMFLOAT3(-30.f, 30.f, 0.f);
 
 	cpuEngine.GetCamera()->transform.LookAt(0.f,0.f,0.f, CPU_VEC3_RIGHT);
 	
@@ -311,6 +311,7 @@ void App::CheckScore()
 		int col = Utils::GetRandomNumber(2, m_pBoard.GetGrid().GetRowSize() - 2);
 		m_pBonus->GetTransform().pos = m_pBonus->GridToWorld(row, col);
 		m_pBonus->GetTransform().pos.y = m_pBoard.GetStandHeight(row, col);
+		m_pBonus->GetParticleEmmiter()->pos = m_pBonus->GetTransform().pos;
 	}
 }
 
