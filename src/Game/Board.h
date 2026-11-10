@@ -19,6 +19,9 @@ private:
 
 	std::vector<Wall*> m_walls;
 	std::vector <BaseEntity*> m_BoardElementToUpdate;
+	
+	//walls% removed (0 to have normal)
+	int m_wallPercent = 30;
 
 	XMFLOAT3 mOrigin;
 
@@ -50,6 +53,7 @@ public:
 	float GetStandHeight(int row, int col);
 
 	void CarveMaze(int x, int y);
+	void OpenMaze();
 	void AddSpawn(Player& entity);
 	void GenerateMaze(Player& entity);
 
