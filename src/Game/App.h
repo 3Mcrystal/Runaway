@@ -70,13 +70,11 @@ private:
 
 	XMFLOAT3 mOrigin = { 0.f, 0.f ,0.f};
 
-	XMFLOAT3 m_DistanceFromBonus;
-
-	//Serializer m_Serializer;
+	XMFLOAT3 m_DistanceFromBonus = { 0.f,0.f,0.f };
 
 	int m_score = 0;
 	int m_Bestscore;
 
-	bool m_gameOver = false;
+	int m_state;
 
 };
