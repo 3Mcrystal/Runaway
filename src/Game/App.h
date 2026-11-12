@@ -40,6 +40,7 @@ private:
 	void HandleInput();
 	void CheckScore();
 	void CheckTeleporter(float dt);
+	void ChangeEnemyPatrols();
 	void SaveBestScore();
 
 private: // Debug //
@@ -75,6 +76,7 @@ private:
 	XMFLOAT3 m_DistanceFromBonus = { 0.f,0.f,0.f };
 
 	int m_score = 0;
+	int m_bonusForNewPatrol = 3;   //patrols chnage every X bus
 	int m_Bestscore;
 
 	int m_state;

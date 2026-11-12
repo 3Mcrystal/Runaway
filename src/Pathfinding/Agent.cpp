@@ -16,8 +16,8 @@ bool Agent::SetDestination(int x, int y)
 
 	Node* node = (*m_grid)[x][y];
 
-	//wall, own cell, or cell taken by an agent
-	if (node->GetIsWall() || node->GetIsBlocked())
+	//wall (can't climb), own cell, or cell taken by an agent
+	if ((node->GetIsWall() && m_canClimb == false) || node->GetIsBlocked())
 		return false;
 
 	int oldX = m_destX;
@@ -43,7 +43,7 @@ bool Agent::SetDestination(int x, int y)
 //Cells of other agents flagged as blocked,avoid
 bool Agent::Replan()
 {
-	m_pathfinding->Djikstra(*m_grid, (*m_grid)[m_x][m_y], (*m_grid)[m_destX][m_destY]);
+	m_pathfinding->Djikstra(*m_grid, (*m_grid)[m_x][m_y], (*m_grid)[m_destX][m_destY], m_canClimb);
 
 	if (m_pathfinding->GetAttainable() == false || m_pathfinding->GetPath().empty())
 		return false;

@@ -11,7 +11,7 @@ public:
 	~Pathfinding();
 
     void BFS(Grid& g, Node* start, Node* target);
-    void Djikstra(Grid& g, Node* start, Node* target);
+    void Djikstra(Grid& g, Node* start, Node* target, bool canClimb = false);
 
     bool GetAttainable() { return attainable; }
     const std::vector<Node*>& GetPath() const { return path; }

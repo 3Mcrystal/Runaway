@@ -314,6 +314,9 @@ void App::CheckScore()
 		m_pBonus->GetTransform().pos = m_pBonus->GridToWorld(row, col);
 		m_pBonus->GetTransform().pos.y = m_pBoard.GetStandHeight(row, col);
 		m_pBonus->GetParticleEmmiter()->pos = m_pBonus->GetTransform().pos;
+
+		if (m_score % m_bonusForNewPatrol == 0)
+			ChangeEnemyPatrols();
 	}
 }
 
@@ -349,6 +352,24 @@ void App::CheckTeleporter(float dt)
 
 		m_pTeleporter->SetCanTeleport(false);
 		m_pTeleporter->SetBaseTeleportCooldown();
+
+
+	}
+}
+
+void App::ChangeEnemyPatrols()
+{
+	Grid& grid = Board::GetInstance().GetGrid();
+
+	for (Enemy* enemy : m_pEnemies)
+	{
+		int startRow = Utils::GetRandomNumber(1, grid.GetColSize() - 2);
+		int startCol = Utils::GetRandomNumber(1, grid.GetRowSize() - 2);
+		int destRow = Utils::GetRandomNumber(1, grid.GetColSize() - 2);
+		int destCol = Utils::GetRandomNumber(1, grid.GetRowSize() - 2);
+
+		if (FindFreeCell(startRow, startCol) && FindFreeCell(destRow, destCol))
+			enemy->ChangePatrolRoute(startRow, startCol, destRow, destCol);
 	}
 }
 
