@@ -20,6 +20,7 @@ private:
 	int m_indice = 0;
 
 	bool m_patrol = false;
+	bool m_canClimb = false; //walls can be crossed
 
 public:
 
@@ -38,6 +39,9 @@ public:
 
 	bool IsPatrol() const { return m_patrol; }
 	void SetPatrol(bool value) { m_patrol = value; }
+
+	bool CanClimb() const { return m_canClimb; }
+	void SetCanClimb(bool value) { m_canClimb = value; }
 
 	bool SetDestination(int x, int y); //false, request cancelled
 	bool Replan();                     //false, no path, keep old

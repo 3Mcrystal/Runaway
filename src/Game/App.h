@@ -39,6 +39,7 @@ private:
 	bool FindFreeCell(int& row, int& col);
 	void HandleInput();
 	void CheckScore();
+	void ChangeEnemyPatrols();
 	void SaveBestScore();
 
 private: // Debug //
@@ -75,6 +76,7 @@ private:
 	//Serializer m_Serializer;
 
 	int m_score = 0;
+	int m_bonusForNewPatrol = 3;   //patrols chnage every X bus
 	int m_Bestscore;
 
 	bool m_gameOver = false;

@@ -22,7 +22,10 @@ void Enemy::SetAgent(Agent* agent)
 {
 	m_agent = agent;
 
+	m_agent->SetCanClimb(true);
+
 	GetTransform().pos = GridToWorld(m_agent->GetX(), m_agent->GetY());
+	GetTransform().pos.y = Board::GetInstance().GetStandHeight(m_agent->GetX(), m_agent->GetY());
 }
 
 void Enemy::SetPatrolRoute(int destRow, int destCol)
@@ -34,6 +37,21 @@ void Enemy::SetPatrolRoute(int destRow, int destCol)
 
 	m_agent->SetPatrol(true);
 	m_agent->SetDestination(m_destRow, m_destCol);
+}
+
+void Enemy::ChangePatrolRoute(int startRow, int startCol, int destRow, int destCol)
+{
+	m_startRow = startRow;
+	m_startCol = startCol;
+	m_destRow = destRow;
+	m_destCol = destCol;
+
+	//go to new start when chase is done
+	if (m_state == EnemyState::Patrol)
+	{
+		m_agent->SetPatrol(false);
+		m_agent->SetDestination(m_startRow, m_startCol);
+	}
 }
 
 void Enemy::SetColor(int r, int g, int b)
@@ -129,25 +147,54 @@ void Enemy::Update(float dt)
 		}
 		else if (m_agent->HasPath() == false)
 		{
-			SetPatrolRoute(m_destRow, m_destCol);
+			//No path, go back to start cell
+			//SetPatrolRoute takes current cell as start
+			if (m_agent->GetX() == m_startRow && m_agent->GetY() == m_startCol)
+			{
+				SetPatrolRoute(m_destRow, m_destCol);
+			}
+			else
+			{
+				m_agent->SetPatrol(false);
+				m_agent->SetDestination(m_startRow, m_startCol);
+			}
 		}
 	}
 
 	XMFLOAT3 goal = GridToWorld(m_agent->GetX(), m_agent->GetY());
+	goal.y = Board::GetInstance().GetStandHeight(m_agent->GetX(), m_agent->GetY());
+
 	XMFLOAT3& pos = GetTransform().pos;
 
-	float dx = goal.x - pos.x;
-	float dz = goal.z - pos.z;
-	float dist = sqrtf(dx * dx + dz * dz);
+	//Like the player
+	XMFLOAT3 target = goal;
+	float flat = sqrtf((goal.x - pos.x) * (goal.x - pos.x) + (goal.z - pos.z) * (goal.z - pos.z));
+
+	if (goal.y > pos.y + 0.01f)
+		target = { pos.x, goal.y, pos.z };
+	else if (goal.y < pos.y - 0.01f && flat > 0.01f)
+		target = { goal.x, pos.y, goal.z };
+
+	float dx = target.x - pos.x;
+	float dy = target.y - pos.y;
+	float dz = target.z - pos.z;
+	float dist = sqrtf(dx * dx + dy * dy + dz * dz);
 	float step = m_speed * dt;
 
 	if (dist <= step)
 	{
-		pos = goal;
+		pos = target;
 	}
 	else
 	{
 		pos.x += dx / dist * step;
+		pos.y += dy / dist * step;
 		pos.z += dz / dist * step;
 	}
+
+	auto [row, col] = WorldToGrid(pos);
+	float ground = Board::GetInstance().GetStandHeight(row, col);
+
+	if (pos.y < ground)
+		pos.y = ground;
 }

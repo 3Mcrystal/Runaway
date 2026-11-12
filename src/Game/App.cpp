@@ -261,6 +261,25 @@ void App::CheckScore()
 		int col = Utils::GetRandomNumber(2, m_pBoard.GetGrid().GetRowSize() - 2);
 		m_pBonus->GetTransform().pos = m_pBonus->GridToWorld(row, col);
 		m_pBonus->GetTransform().pos.y = m_pBoard.GetStandHeight(row, col);
+
+		if (m_score % m_bonusForNewPatrol == 0)
+			ChangeEnemyPatrols();
+	}
+}
+
+void App::ChangeEnemyPatrols()
+{
+	Grid& grid = Board::GetInstance().GetGrid();
+
+	for (Enemy* enemy : m_pEnemies)
+	{
+		int startRow = Utils::GetRandomNumber(1, grid.GetColSize() - 2);
+		int startCol = Utils::GetRandomNumber(1, grid.GetRowSize() - 2);
+		int destRow = Utils::GetRandomNumber(1, grid.GetColSize() - 2);
+		int destCol = Utils::GetRandomNumber(1, grid.GetRowSize() - 2);
+
+		if (FindFreeCell(startRow, startCol) && FindFreeCell(destRow, destCol))
+			enemy->ChangePatrolRoute(startRow, startCol, destRow, destCol);
 	}
 }
 

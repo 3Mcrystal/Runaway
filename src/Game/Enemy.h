@@ -51,6 +51,7 @@ public:
 	void SetTarget(Player* target) { m_target = target; }
 
 	void SetPatrolRoute(int destRow, int destCol);
+	void ChangePatrolRoute(int startRow, int startCol, int destRow, int destCol);   //new start and destination while the game runs
 
 	bool IsTouchingPlayer();
 
