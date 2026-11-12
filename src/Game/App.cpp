@@ -274,6 +274,12 @@ void App::HandleInput()
 
 		if(m_state == PAUSE)
 			m_state = PLAY;
+
+		// finir le reset
+		if (m_state == END)
+		{
+			m_state = START;
+		}
 	}
 
 	if (cpuInput.vi.IsKeyPressed(90))

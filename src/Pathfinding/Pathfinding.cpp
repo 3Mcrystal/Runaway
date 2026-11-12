@@ -27,17 +27,17 @@ static std::vector<Node*> RebuildPath(const std::vector<std::vector<Node*>>& par
     return result;
 }
 
-void Pathfinding::BFS(Grid& g, Node* start, Node* target)
+void Pathfinding::BFS(Grid& grid, Node* start, Node* target)
 {
     attainable = true;
     path.clear();
     deplacement = 0;
 
-    const int lines = g.GetColSize();
-    const int cols  = g.GetRowSize();
+    const int lines = grid.GetColSize();
+    const int cols  = grid.GetRowSize();
 
-    Node* s = g[start->GetX()][start->GetY()];
-    Node* t = g[target->GetX()][target->GetY()];
+    Node* s = grid[start->GetX()][start->GetY()];
+    Node* t = grid[target->GetX()][target->GetY()];
 
 	std::vector<std::vector<bool>>  visited   (lines, std::vector<bool>(cols, false));//Crée un tableau de tableau de booléens pour savoir si on a déjà visité une case // j'adore cette feature 
 	std::vector<std::vector<Node*>> parent (lines, std::vector<Node*>(cols, nullptr));//Crée un tableau de tableau de pointeurs vers les parents pour reconstruire le chemin
@@ -65,10 +65,10 @@ void Pathfinding::BFS(Grid& g, Node* start, Node* target)
             if (nx < 0 || nx >= lines || ny < 0 || ny >= cols)
                 continue; // hors limites
 
-            if (g[nx][ny]->GetIsWall())
+            if (grid[nx][ny]->GetIsWall())
                 continue; // mur
 
-            if (g[nx][ny]->GetIsBlocked())
+            if (grid[nx][ny]->GetIsBlocked())
                 continue; //case prise par agent
 
             if (visited[nx][ny])
@@ -76,7 +76,7 @@ void Pathfinding::BFS(Grid& g, Node* start, Node* target)
 
             visited[nx][ny] = true;
             parent[nx][ny] = current;
-            toVisit.push(g[nx][ny]);
+            toVisit.push(grid[nx][ny]);
         }
     }
 
