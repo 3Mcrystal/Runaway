@@ -8,7 +8,6 @@ public:
 	~Bonus();
 
 	void Init() override;
-	void DestroyEntity()override;
 
 	cpu_particle_emitter* GetParticleEmmiter();
 

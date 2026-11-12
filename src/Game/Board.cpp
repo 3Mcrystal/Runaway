@@ -17,7 +17,6 @@ void Board::DestroyInstance()
 {
     delete s_instance;
     s_instance = nullptr;
-
 }
 
 Board::Board()

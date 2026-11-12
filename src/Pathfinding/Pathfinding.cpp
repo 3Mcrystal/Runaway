@@ -94,20 +94,20 @@ void Pathfinding::BFS(Grid& g, Node* start, Node* target)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Pathfinding::Djikstra(Grid& g, Node* start, Node* target, bool canClimb)
+void Pathfinding::Djikstra(Grid& grid, Node* start, Node* target, bool canClimb)
 {
     attainable = true;
     path.clear();
     deplacement = 0;
     cost = 0;
 
-    const int lines = g.GetColSize();
-    const int cols = g.GetRowSize();
+    const int lines = grid.GetColSize();
+    const int cols = grid.GetRowSize();
 
 	constexpr int INF = std::numeric_limits<int>::max();// Valeur maximale d'un int pour représenter l'infini
 
-    Node* s = g[start->GetX()][start->GetY()];
-    Node* t = g[target->GetX()][target->GetY()];
+    Node* s = grid[start->GetX()][start->GetY()];
+    Node* t = grid[target->GetX()][target->GetY()];
 
     std::vector<std::vector<int>>   dist(lines, std::vector<int>(cols, INF));
     std::vector<std::vector<Node*>> parent(lines, std::vector<Node*>(cols, nullptr));
@@ -143,13 +143,13 @@ void Pathfinding::Djikstra(Grid& g, Node* start, Node* target, bool canClimb)
 			if (nx < 0 || nx >= lines || ny < 0 || ny >= cols)//hors limites
                 continue;
 
-            if (g[nx][ny]->GetIsWall() && canClimb == false)//mur (sauf si on peut grimper)
+            if (grid[nx][ny]->GetIsWall() && canClimb == false)//mur (sauf si on peut grimper)
                 continue;
 
-            if (g[nx][ny]->GetIsBlocked())//agent
+            if (grid[nx][ny]->GetIsBlocked())//agent
                 continue;
 
-            int nd = d + g[nx][ny]->GetLevel() + 1;
+            int nd = d + grid[nx][ny]->GetLevel() + 1;
 
             if (nd < dist[nx][ny])      // meilleur chemin trouvé
             {
@@ -157,7 +157,7 @@ void Pathfinding::Djikstra(Grid& g, Node* start, Node* target, bool canClimb)
 
                 parent[nx][ny] = current;
 
-                toVisit.push({ nd, g[nx][ny] });
+                toVisit.push({ nd, grid[nx][ny] });
             }
         }
     }

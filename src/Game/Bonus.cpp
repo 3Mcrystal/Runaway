@@ -14,8 +14,10 @@ Bonus::Bonus()
 
 Bonus::~Bonus()
 {
+	m_pEntityEmitter = cpuEngine.Release(m_pEntityEmitter);
 	delete GetEntity()->pMesh;
 	delete GetEntity()->pMaterial;
+
 }
 
 void Bonus::Init()
@@ -28,7 +30,6 @@ void Bonus::Init()
 	GetTransform().pos = GridToWorld(row, col);
 	GetTransform().pos.y = board.GetStandHeight(row, col);
 
-	m_pEntityEmitter = new cpu_particle_emitter;
 	cpuEngine.GetParticleData()->Create(2000000);
 	cpuEngine.GetParticlePhysics()->gy = -0.5f;
 	m_pEntityEmitter = cpuEngine.CreateParticleEmitter();
@@ -41,11 +42,6 @@ void Bonus::Init()
 	m_pEntityEmitter->speedMin = 6.f;
 	m_pEntityEmitter->colorMin = cpu::ToColor(255, 0, 255);
 	m_pEntityEmitter->colorMax = cpu::ToColor(0, 255, 0);
-}
-
-void Bonus::DestroyEntity()
-{
-	m_pEntityEmitter = cpuEngine.Release(m_pEntityEmitter);
 }
 
 cpu_particle_emitter* Bonus::GetParticleEmmiter()

@@ -326,6 +326,7 @@ void App::CheckTeleporter(float dt)
 
 	if(m_pTeleporter->GetTeleportCooldown() <= 0.f)
 		m_pTeleporter->SetCanTeleport(true);
+
 	// Port1 to Port2
 	if (m_pTeleporter->GetPort1()->GetTransform().pos.x == m_pPlayer->GetTransform().pos.x && m_pTeleporter->GetPort1()->GetTransform().pos.z == m_pPlayer->GetTransform().pos.z && m_pTeleporter->CanTeleport())
 	{
@@ -352,8 +353,6 @@ void App::CheckTeleporter(float dt)
 
 		m_pTeleporter->SetCanTeleport(false);
 		m_pTeleporter->SetBaseTeleportCooldown();
-
-
 	}
 }
 
@@ -409,8 +408,8 @@ void App::LoadResources()
 	CreateEnemy(lastRow, lastCol, 1, lastCol / 2);
 	CreateEnemy(1, lastCol, lastRow / 2, 1);
 	
-	m_pBoard.Init();
 	m_pTeleporter->Init();
+	m_pBoard.Init();
 
 	for (BaseEntity* e : m_entityToUpdate)
 		e->Init();
@@ -435,6 +434,7 @@ void App::ReleaseRessources()
 
 	delete m_pPlayer;
 	delete m_pBonus;
+	delete m_pTeleporter;
 	m_pBoard.DestroyInstance();
 }
 

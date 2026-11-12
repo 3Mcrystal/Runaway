@@ -11,8 +11,6 @@ int GetRandomNumber(int min, int max)
     return dis(gen);
 }
 
-#define maybe GetRandomNumber(0,1)
-
 void SampleScene::OnInitialize()
 {
     GenerateMaze();
@@ -35,8 +33,7 @@ void SampleScene::OnUpdate()
     UpdateMovement();
     DrawGrid();
 
-    Debug::DrawText({ 10.f, 10.f },
-        "ZQSD : deplacer le curseur - Entree : lancer le pathfinding", Color::White);
+    Debug::DrawText({ 10.f, 10.f },"ZQSD : deplacer le curseur - Entree : lancer le pathfinding", Color::White);
 
     if (mReachable == false)
     {
@@ -94,8 +91,27 @@ void SampleScene::HandleInput()
             {
                 mGrid[row][col]->SetIsWall(true);
             }
-        }
-            
+        }   
+    }
+
+    if (input->IsKeyDown(SDLK_KP_PLUS))
+    {
+        Vector2f mouse = input->GetMousePosition();
+        int col = static_cast<int>(std::floor((mouse.x - mOrigin.x) / CELL_SIZE));
+        int row = static_cast<int>(std::floor((mouse.y - mOrigin.y) / CELL_SIZE));
+
+        if (IsInGrid(row, col))
+            mGrid[row][col]->SetLevel(mGrid[row][col]->GetLevel() + 1);
+    }
+
+    if (input->IsKeyDown(SDLK_KP_MINUS))
+    {
+        Vector2f mouse = input->GetMousePosition();
+        int col = static_cast<int>(std::floor((mouse.x - mOrigin.x) / CELL_SIZE));
+        int row = static_cast<int>(std::floor((mouse.y - mOrigin.y) / CELL_SIZE));
+
+        if (IsInGrid(row, col))
+            mGrid[row][col]->SetLevel(mGrid[row][col]->GetLevel() - 1);
     }
 }
 
@@ -115,9 +131,9 @@ bool SampleScene::IsInGrid(int row, int col)
 
 void SampleScene::StartPathfinding()
 {
-    pathfind.BFS(mGrid, mpPlayerNode, mpCursorNode);   // ou pathfind->Djikstra(mGrid, ...)
+    pathfind.Djikstra(mGrid, mpPlayerNode, mpCursorNode);
     mReachable = pathfind.GetAttainable();
-    mPath = pathfind.GetPath();                        // on récupère le chemin calculé
+    mPath = pathfind.GetPath();
 
     if (mReachable && mPath.empty() == false)
     {
@@ -190,7 +206,10 @@ void SampleScene::DrawGrid()
             Node* node = mGrid[i][j];
 
             if (node->GetIsWall())
+            {
                 DrawSquare(NodeCenter(node), CELL_SIZE - 2.f, Color::Black, true);
+                Debug::DrawText({ NodeCenter(node).x - 5,NodeCenter(node).y - 10 }, std::to_string(node->GetLevel()), Color::Cyan);
+            }
         }
     }
 
@@ -264,6 +283,7 @@ void SampleScene::CarveMaze(int x, int y)
     std::shuffle(dirs.begin(), dirs.end(), SampleScene::m_RNG);
 
     mGrid[y][x]->SetIsWall(false);
+    mGrid[y][x]->SetLevel(0);
 
     auto isBounds = [](int ax, int bound)
         {
@@ -278,6 +298,7 @@ void SampleScene::CarveMaze(int x, int y)
         if (isBounds(ny, mGrid.GetColSize()) && isBounds(nx, mGrid.GetRowSize()) && mGrid[ny][nx]->GetIsWall())
         {
             mGrid[y + dy[dir] / 2][x + dx[dir] / 2]->SetIsWall(false);
+            mGrid[y + dy[dir] / 2][x + dx[dir] / 2]->SetLevel(0);
 
             CarveMaze(nx, ny);
         }
@@ -286,6 +307,7 @@ void SampleScene::CarveMaze(int x, int y)
 
 void SampleScene::GenerateMaze()
 {
+    m_RNG.seed(std::random_device{}());
 
     if (mGrid.GetColSize() <= 0 || mGrid.GetRowSize() <= 0)
     {
@@ -293,13 +315,13 @@ void SampleScene::GenerateMaze()
         return;
     }
 
-    m_RNG.seed(std::random_device{}());
 
     for (int i = 0; i < mGrid.GetColSize();i++)
     {
         for (int j = 0; j < mGrid.GetRowSize();j++)
         {
             mGrid[i][j]->SetIsWall(true);
+            mGrid[i][j]->SetLevel(GetRandomNumber(1, 3));
         }
     }
 

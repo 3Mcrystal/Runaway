@@ -25,6 +25,11 @@ Teleporter::Teleporter()
 
 Teleporter::~Teleporter()
 {
+	delete mPort1->GetEntity()->pMaterial;
+	delete mPort1->GetEntity()->pMesh;
+	delete mPort1;
+	delete mPort2->GetEntity()->pMaterial;
+	delete mPort2;
 }
 
 BaseEntity* Teleporter::GetPort1()
