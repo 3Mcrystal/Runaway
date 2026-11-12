@@ -42,7 +42,7 @@ void Board::ClearWalls()
 
 void Board::Init()
 {
-    //In case Init is called again?
+    //Clear pour recréer
     delete m_floor;
     ClearWalls();
 
@@ -83,9 +83,10 @@ bool Board::IsWalkable(int row, int col)
     return IsInBounds(row, col, 1);
 }
 
+// renvoie la hauteur + le rayon du joueur pour éviter le clipping
 float Board::GetStandHeight(int row, int col)
 {
-    if (!IsInBounds(row, col, 0))
+    if (IsInBounds(row, col, 0) == false)
         return FLOOR_TOP + PLAYER_RADIUS;
 
     Node* node = m_grid[row][col];
@@ -109,12 +110,12 @@ void Board::AddSpawn(Player& entity)
 void Board::CarveMaze(int x, int y)
 {
 
-    static const int dx[] = { 0,  0, -2,  2 };
-    static const int dy[] = { -2, 2,  0,  0 };
+    static const int dx[] = { 0,  0, -2,  2 };//direction de 2
+    static const int dy[] = { -2, 2,  0,  0 };//direction de 2
 
     static std::vector<int> dirs = { 0, 1, 2, 3 };
 
-    std::shuffle(dirs.begin(), dirs.end(), m_RNG);
+    std::shuffle(dirs.begin(), dirs.end(), m_RNG);// mélange les directions
 
     m_grid[y][x]->SetIsWall(false);
 
@@ -125,28 +126,28 @@ void Board::CarveMaze(int x, int y)
 
         if (IsInBounds(ny, nx, 1) && m_grid[ny][nx]->GetIsWall())
         {
-            m_grid[y + dy[dir] / 2][x + dx[dir] / 2]->SetIsWall(false);
-            CarveMaze(nx, ny);
+            m_grid[y + dy[dir] / 2][x + dx[dir] / 2]->SetIsWall(false);//creuse le labyrinth
+            CarveMaze(nx, ny); //appel la fonction récursivement pour continuer le creusage
         }
     }
 }
 
-//Removes random walls
+//Enlève mur aléatoire
 void Board::OpenMaze()
 {
-    //inner cells only
+    //Uniquement cellule intérieur
     for (int i = 1; i < m_grid.GetColSize() - 1; i++)
     {
         for (int j = 1; j < m_grid.GetRowSize() - 1; j++)
         {
-            // Skip cell if is already free or if roll fails :
+            // Skip cell si c'est du sol ou si m_RNG > % :
             if (m_grid[i][j]->GetIsWall() == false || (int)(m_RNG() % 100) >= m_wallPercent)
                 continue;
 
-            //Is one / more of 4 neighbours free cell ?
+            //si 1 voisins ou plus est une free cell?
             bool touchesFreeCell = m_grid[i - 1][j]->GetIsWall() == false || m_grid[i + 1][j]->GetIsWall() == false || m_grid[i][j - 1]->GetIsWall() == false || m_grid[i][j + 1]->GetIsWall() == false;
 
-			//wall touching a free cell is removed (avoid closed areas)
+			//évite les espaces fermés
             if (touchesFreeCell)
                 m_grid[i][j]->SetIsWall(false);
         }

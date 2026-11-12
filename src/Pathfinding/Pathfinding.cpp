@@ -15,18 +15,19 @@ Pathfinding::~Pathfinding()
 {
 }
 
+//réarrange le chemin dans le bonne ordre
 static std::vector<Node*> RebuildPath(const std::vector<std::vector<Node*>>& parent,Node* s, Node* t)
 {
     std::vector<Node*> result;
-
-    for (Node* cur = t; cur != s; cur = parent[cur->GetX()][cur->GetY()])
-        result.push_back(cur);
+    // à refaire
+    for (Node* current = t; current != s; current = parent[current->GetX()][current->GetY()])
+        result.push_back(current);
 
     std::reverse(result.begin(), result.end());
 
     return result;
 }
-
+// recherche en largeur
 void Pathfinding::BFS(Grid& grid, Node* start, Node* target)
 {
     attainable = true;
@@ -43,6 +44,7 @@ void Pathfinding::BFS(Grid& grid, Node* start, Node* target)
 	std::vector<std::vector<Node*>> parent (lines, std::vector<Node*>(cols, nullptr));//Crée un tableau de tableau de pointeurs vers les parents pour reconstruire le chemin
     std::queue<Node*> toVisit;
 
+    //direction
     const int dx[4] = { -1, 1, 0, 0 };
     const int dy[4] = { 0, 0, -1, 1 };
 
@@ -80,7 +82,7 @@ void Pathfinding::BFS(Grid& grid, Node* start, Node* target)
         }
     }
 
-    if (!visited[t->GetX()][t->GetY()])
+    if (visited[t->GetX()][t->GetY()] == false)
     {
         attainable = false;
         return;
@@ -94,6 +96,7 @@ void Pathfinding::BFS(Grid& grid, Node* start, Node* target)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// à commenter
 void Pathfinding::Djikstra(Grid& grid, Node* start, Node* target, bool canClimb)
 {
     attainable = true;
@@ -112,11 +115,10 @@ void Pathfinding::Djikstra(Grid& grid, Node* start, Node* target, bool canClimb)
     std::vector<std::vector<int>>   dist(lines, std::vector<int>(cols, INF));
     std::vector<std::vector<Node*>> parent(lines, std::vector<Node*>(cols, nullptr));
 
-    // File de priorité : le plus petit coût sort en premier
+    // le plus petit coût sort en premier
+    std::priority_queue<std::pair<int, Node*>, std::vector<std::pair<int, Node*>>, std::greater<std::pair<int, Node*>>> toVisit;
 
-    using QueueItem = std::pair<int, Node*>;   // (coût, case)
-    std::priority_queue<QueueItem, std::vector<QueueItem>, std::greater<QueueItem>> toVisit;
-
+    //direction
     const int dx[4] = { -1, 1, 0, 0 };
     const int dy[4] = { 0, 0, -1, 1 };
 
@@ -128,7 +130,7 @@ void Pathfinding::Djikstra(Grid& grid, Node* start, Node* target, bool canClimb)
         auto [d, current] = toVisit.top();
         toVisit.pop();
 
-        //on a déjà trouvé mieux pour ce nœud
+        //on a déjà trouvé mieux pour ce noeud
         if (d > dist[current->GetX()][current->GetY()])
             continue;
 
@@ -151,7 +153,7 @@ void Pathfinding::Djikstra(Grid& grid, Node* start, Node* target, bool canClimb)
 
             int nd = d + grid[nx][ny]->GetLevel() + 1;
 
-            if (nd < dist[nx][ny])      // meilleur chemin trouvé
+            if (nd < dist[nx][ny])// meilleur chemin trouvé
             {
                 dist[nx][ny] = nd;
 

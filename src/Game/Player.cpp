@@ -81,6 +81,7 @@ bool Player::MoveTowards(XMFLOAT3 target, float dt)
 	return false;
 }
 
+//ajoute points de déplacement
 void Player::QueueMove(int row, int col)
 {
 	Board& board = Board::GetInstance();
@@ -108,7 +109,7 @@ void Player::QueueMove(int row, int col)
 void Player::TeleportTo(XMFLOAT3 position)
 {
 	// on remplace par une file vide
-	std::queue<XMFLOAT3>().swap(m_PositionQueue);
+	std::queue<XMFLOAT3>().swap(m_PositionQueue);//pratique
 
 	GetTransform().SetPosition(position.x, position.y, position.z);
 	m_TargetPos = position;
@@ -144,7 +145,7 @@ void Player::Update(float dt)
 {
 	Board& board = Board::GetInstance();
 
-	// En deplacement : on suit la file de waypoints, aucune decision tant qu'elle n'est pas vide
+	//on suit la file de points, aucune decision tant qu'elle n'est pas vide
 	if (m_PositionQueue.empty() == false)
 	{
 		if (MoveTowards(m_PositionQueue.front(), dt))
@@ -156,6 +157,7 @@ void Player::Update(float dt)
 
 	std::pair<int,int> PosGrid = WorldToGrid(GetTransform().pos);
 
+	//change de direction
 	if (m_ChangeDirection && board.IsWalkable(PosGrid.first + (int)m_NewDir.z, PosGrid.second + (int)m_NewDir.x))
 	{
 		SetCurrentDir(m_NewDir);
@@ -166,6 +168,7 @@ void Player::Update(float dt)
 	int nextRow = PosGrid.first + (int)m_CurrentDir.z;
 	int nextCol = PosGrid.second + (int)m_CurrentDir.x;
 
+	//ajoute la prochaine case à la liste
 	if ((m_CurrentDir.x != 0 || m_CurrentDir.z != 0) && board.IsWalkable(nextRow, nextCol))
 	{
 		QueueMove(nextRow, nextCol);

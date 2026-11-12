@@ -51,7 +51,7 @@ class SampleScene : public Scene
     void DrawSquare(Vector2f center, float size, const Color& color, bool filled);
 
     void CarveMaze(int x,int y);
-    void addEntranceAndExit();
+    void addEntrance();
     void GenerateMaze();
 
 public:

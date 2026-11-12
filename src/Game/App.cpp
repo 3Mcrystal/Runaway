@@ -129,7 +129,7 @@ void App::OnRender(int pass)
 		{
 		case END:
 			color = { 1.f, 0.f, 0.f };
-			text = "GAME OVER - score : " + CPU_STR(m_score) + " (Escape to quit)";
+			text = "GAME OVER - score : " + CPU_STR(m_score) + " (Escape to quit) (Enter to play)";
 			cpuDevice.DrawText(&m_font, text.c_str(), (int)(cpuDevice.GetWidth() * 0.5f), (int)(cpuDevice.GetHeight() * 0.5f), CPU_TEXT_CENTER, &color);
 			break;
 		case PAUSE:
@@ -275,9 +275,9 @@ void App::HandleInput()
 		if(m_state == PAUSE)
 			m_state = PLAY;
 
-		// finir le reset
 		if (m_state == END)
 		{
+			Reset();
 			m_state = START;
 		}
 	}
@@ -387,6 +387,20 @@ void App::SaveBestScore()
 	std::ofstream file("../../res/Game/score.txt");
 	if (file.is_open())
 		file << m_Bestscore;
+}
+
+void App::Reset()
+{
+	Board& m_pBoard = Board::GetInstance();
+
+	XMFLOAT3 dest = m_pPlayer->GridToWorld(m_pBoard.GetGrid().GetRowSize() / 2, m_pBoard.GetGrid().GetColSize() / 2);
+
+	std::pair<int, int> pos = m_pPlayer->WorldToGrid(dest);
+	dest.y = m_pBoard.GetStandHeight(pos.first, pos.second);
+
+	m_pPlayer->TeleportTo(dest);
+
+	m_score = 0;
 }
 
 void App::LoadResources()

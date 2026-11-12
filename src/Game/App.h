@@ -42,6 +42,7 @@ private:
 	void CheckTeleporter(float dt);
 	void ChangeEnemyPatrols();
 	void SaveBestScore();
+	void Reset();
 
 private: // Debug //
 

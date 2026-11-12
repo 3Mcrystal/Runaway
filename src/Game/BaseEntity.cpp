@@ -2,10 +2,6 @@
 #include "BaseEntity.h"
 #include "Resource.h"
 
-BaseEntity::BaseEntity(cpu_mesh mesh, cpu_material material, cpu_entity* entity, cpu_particle_emitter* particle_emitter)
-	: m_pEntity(entity)
-{}
-
 BaseEntity::BaseEntity()
 {
 	m_pEntity = cpuEngine.CreateEntity();

@@ -131,7 +131,7 @@ bool SampleScene::IsInGrid(int row, int col)
 
 void SampleScene::StartPathfinding()
 {
-    pathfind.Djikstra(mGrid, mpPlayerNode, mpCursorNode);
+    pathfind.Djikstra(mGrid, mpPlayerNode, mpCursorNode,true);
     mReachable = pathfind.GetAttainable();
     mPath = pathfind.GetPath();
 
@@ -245,8 +245,7 @@ void SampleScene::DrawSquare(Vector2f center, float size, const Color& color, bo
     }
 }
 
-void SampleScene::addEntranceAndExit() {
-
+void SampleScene::addEntrance() {
 
     for (int x = 1; x < mGrid.GetRowSize(); x += 2) 
     { 
@@ -258,34 +257,21 @@ void SampleScene::addEntranceAndExit() {
             break;
         }
     }
-
-    std::vector<int> validExits;
-    for (int x = 1; x < mGrid.GetRowSize(); x += 2) {
-        if (mGrid[mGrid.GetColSize() - 2][x]->GetIsWall() == false)
-        {
-            validExits.push_back(x);
-        }
-    }
-
-    if (!validExits.empty()) {
-        int exitIndex = validExits[m_RNG() % validExits.size()];
-        mGrid[mGrid.GetColSize() - 2][exitIndex]->SetIsWall(false);
-    }
 }
 
 void SampleScene::CarveMaze(int x, int y) 
 {
-    static const int dx[] = { 0,  0, -2,  2 };
-    static const int dy[] = { -2, 2,  0,  0 };
+    static const int dx[] = { 0,  0, -2,  2 };//direction de 2
+    static const int dy[] = { -2, 2,  0,  0 };//direction de 2
 
     static std::vector<int> dirs = { 0, 1, 2, 3 };
 
-    std::shuffle(dirs.begin(), dirs.end(), SampleScene::m_RNG);
+    std::shuffle(dirs.begin(), dirs.end(), SampleScene::m_RNG);// mélange les directions
 
     mGrid[y][x]->SetIsWall(false);
     mGrid[y][x]->SetLevel(0);
 
-    auto isBounds = [](int ax, int bound)
+    auto isBounds = [](int ax, int bound)// lambda vérifiant les limite
         {
         return (ax > 0) && (ax < bound - 1);
         };
@@ -297,10 +283,10 @@ void SampleScene::CarveMaze(int x, int y)
 
         if (isBounds(ny, mGrid.GetColSize()) && isBounds(nx, mGrid.GetRowSize()) && mGrid[ny][nx]->GetIsWall())
         {
-            mGrid[y + dy[dir] / 2][x + dx[dir] / 2]->SetIsWall(false);
-            mGrid[y + dy[dir] / 2][x + dx[dir] / 2]->SetLevel(0);
+            mGrid[y + dy[dir] / 2][x + dx[dir] / 2]->SetIsWall(false);//creuse le labyrinth
+            mGrid[y + dy[dir] / 2][x + dx[dir] / 2]->SetLevel(0);//reset le level du node
 
-            CarveMaze(nx, ny);
+            CarveMaze(nx, ny); //appel la fonction récursivement pour continuer le creusage
         }
     }
 }
@@ -320,12 +306,12 @@ void SampleScene::GenerateMaze()
     {
         for (int j = 0; j < mGrid.GetRowSize();j++)
         {
-            mGrid[i][j]->SetIsWall(true);
-            mGrid[i][j]->SetLevel(GetRandomNumber(1, 3));
+            mGrid[i][j]->SetIsWall(true);//rempli de mur
+            mGrid[i][j]->SetLevel(GetRandomNumber(1, 3));//assigne une hauteur au mur
         }
     }
 
-    CarveMaze(1, 1);
+    CarveMaze(1, 1);//commence le creusage
 
-    addEntranceAndExit();
+    addEntrance();//ajoute une entrée
 }

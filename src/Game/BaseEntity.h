@@ -9,8 +9,6 @@ private:
 public:
 
 	//Constructor
-	BaseEntity(cpu_mesh mesh, cpu_material material, cpu_entity* entity, cpu_particle_emitter* particle_emitter);
-
 	BaseEntity();
 
 	virtual ~BaseEntity();
