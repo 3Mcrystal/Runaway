@@ -18,6 +18,7 @@ Enemy::~Enemy()
 	delete GetEntity()->pMaterial;
 }
 
+//Link enemie et agent et place le cube sur la case de l'agent
 void Enemy::SetAgent(Agent* agent)
 {
 	m_agent = agent;
@@ -66,6 +67,7 @@ void Enemy::Init()
 	SetColor(0, 200, 0);   //patrol color
 }
 
+//Distance en cases
 float Enemy::DistanceToTarget()
 {
 	XMFLOAT3 a = GetTransform().pos;
@@ -131,10 +133,12 @@ void Enemy::Update(float dt)
 		}
 		else if (distance > m_loseRadius)
 		{
+			//trop loin
 			StopChase();
 		}
 	}
 
+	//recalcul chaque seconde
 	if (m_thinkTimer <= 0.f)
 	{
 		m_thinkTimer = 1.f;
@@ -175,6 +179,7 @@ void Enemy::Update(float dt)
 	else if (goal.y < pos.y - 0.01f && flat > 0.01f)
 		target = { goal.x, pos.y, goal.z };
 
+	//distance restante / distance possible pendant une frame
 	float dx = target.x - pos.x;
 	float dy = target.y - pos.y;
 	float dz = target.z - pos.z;

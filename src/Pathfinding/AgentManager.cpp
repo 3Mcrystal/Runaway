@@ -1,5 +1,7 @@
 #include "AgentManager.h"
 
+//Cree un agent sur la case  / le garde dans la liste
+//nullptr si case hors grille / un mur, ou deja prise
 Agent* AgentManager::CreateAgent(int x, int y)
 {
 	if (x < 0 || x >= m_grid.GetColSize() || y < 0 || y >= m_grid.GetRowSize())
@@ -8,7 +10,7 @@ Agent* AgentManager::CreateAgent(int x, int y)
 	if (m_grid[x][y]->GetIsWall() || m_grid[x][y]->GetIsBlocked())
 		return nullptr;
 
-	m_agents.push_back(std::make_unique<Agent>(&m_grid, &m_pathfinding, x, y));
+	m_agents.push_back(std::make_unique<Agent>(&m_grid, &m_pathfinding, x, y)); //unique_ptr
 	return m_agents.back().get();
 }
 
@@ -90,11 +92,14 @@ void AgentManager::Step()
 				continue;
 
 			bool blocked = false;
+
+			//un agent est sur la case voulue
 			Agent* other = GetAgentAt(a.nextCell->GetX(), a.nextCell->GetY());
 
 			if (other != nullptr && other->canMove == false)
 				blocked = true;
 
+			//agent avant lui dans la liste va prendre la même case
 			for (int k = 0; k < i; k++)
 			{
 				if (m_agents[k]->canMove && m_agents[k]->nextCell == a.nextCell)

@@ -10,13 +10,21 @@ private:
 	Grid* m_grid = nullptr;
 	Pathfinding* m_pathfinding = nullptr;
 
-	int m_x, m_y;
+	int m_x;
+	int m_y;
 
-	int m_destX = 0, m_destY = 0;
-	int m_startX = 0, m_startY = 0;         //where the agent was
-	int m_patrolEndX = 0, m_patrolEndY = 0; //the destination
+	int m_destX = 0;
+	int m_destY = 0;
 
-	std::vector<Node*> m_path;
+	//where the agent was
+	int m_startX = 0;
+	int m_startY = 0;
+
+	//the destination
+	int m_patrolEndX = 0;
+	int m_patrolEndY = 0;
+
+	std::vector<Node*> m_path;  //les cases a parcourir
 	int m_indice = 0;
 
 	bool m_patrol = false;

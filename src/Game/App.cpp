@@ -188,6 +188,9 @@ void App::UpdateEntity(float dt)
 	}
 }
 
+//Cherche la case libre la plus proche de (row, col)
+//Si mur on prend la plus proche
+//fals siaucune case libre
 bool App::FindFreeCell(int& row, int& col)
 {
 	Grid& grid = m_pBoard.GetGrid();
@@ -206,6 +209,7 @@ bool App::FindFreeCell(int& row, int& col)
 			if (grid[i][j]->GetIsWall() || grid[i][j]->GetIsBlocked())
 				continue;
 
+			//distance, garde la plus petite
 			int distance = abs(i - row) + abs(j - col);
 
 			if (distance < bestDistance)
@@ -362,13 +366,14 @@ void App::CheckTeleporter(float dt)
 	}
 }
 
+//Nouveau depart / une nouvelle destination
 void App::ChangeEnemyPatrols()
 {
 	Grid& grid = Board::GetInstance().GetGrid();
 
 	for (Enemy* enemy : m_pEnemies)
 	{
-		int startRow = Utils::GetRandomNumber(1, grid.GetColSize() - 2);
+		int startRow = Utils::GetRandomNumber(1, grid.GetColSize() - 2); //évite les bords
 		int startCol = Utils::GetRandomNumber(1, grid.GetRowSize() - 2);
 		int destRow = Utils::GetRandomNumber(1, grid.GetColSize() - 2);
 		int destCol = Utils::GetRandomNumber(1, grid.GetRowSize() - 2);

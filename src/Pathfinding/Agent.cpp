@@ -5,6 +5,7 @@ Agent::Agent(Grid* grid, Pathfinding* pathfinding, int x, int y) :
 	m_pathfinding(pathfinding),
 	m_x(x), m_y(y)
 {
+	//les autres agents l'evitent
 	(*m_grid)[m_x][m_y]->SetIsBlocked(true);
 }
 
@@ -20,12 +21,14 @@ bool Agent::SetDestination(int x, int y)
 	if ((node->GetIsWall() && m_canClimb == false) || node->GetIsBlocked())
 		return false;
 
+	//au cas où
 	int oldX = m_destX;
 	int oldY = m_destY;
 
 	m_destX = x;
 	m_destY = y;
 
+	//pas de chemin
 	if (Replan() == false)
 	{
 		m_destX = oldX;
@@ -48,6 +51,7 @@ bool Agent::Replan()
 	if (m_pathfinding->GetAttainable() == false || m_pathfinding->GetPath().empty())
 		return false;
 
+	//repart de sa premiere case
 	m_path = m_pathfinding->GetPath();
 	m_indice = 0;
 	return true;
@@ -59,11 +63,13 @@ void Agent::Stop()
 	m_indice = 0;
 }
 
+//libere la cases
 void Agent::LeaveCell()
 {
 	(*m_grid)[m_x][m_y]->SetIsBlocked(false);
 }
 
+//m_indice compte les cases deja parcourues
 void Agent::MoveToNext()
 {
 	m_x = m_path[m_indice]->GetX();

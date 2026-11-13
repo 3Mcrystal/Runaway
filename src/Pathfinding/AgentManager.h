@@ -10,8 +10,8 @@ private:
 	Pathfinding m_pathfinding;
 	std::vector<std::unique_ptr<Agent>> m_agents;
 
-	float m_stepTime = 0.5f;
-	float m_timer = 0.5f;
+	float m_stepTime = 0.5f;   //avancent toputes les 0.5s
+	float m_timer = 0.5f;      //avant la next step
 
 	void SolveFacing(Agent& a, Agent& b);
 
